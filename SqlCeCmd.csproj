@@ -14,6 +14,7 @@
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkSubset>
     </TargetFrameworkSubset>
+    <ApplicationIcon>data_information.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -84,6 +85,7 @@
     <Compile Include="Test\SqlCeCmdTest.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="data_information.ico" />
     <Content Include="lib\nunit.framework.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
