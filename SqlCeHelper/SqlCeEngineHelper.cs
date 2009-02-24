@@ -6,11 +6,16 @@ using System.Data.SqlServerCe;
 namespace SqlCeCmd
 {
 
-    public class SqlCeEngineHelper
+    internal class SqlCeEngineHelper
     {
         private string connectionString;
 
-        public enum EngineAction
+        internal SqlCeEngineHelper(string connectionString)
+        {
+            this.connectionString = connectionString;
+        }
+
+        internal enum EngineAction
         {
             Undefined,
             Shrink,
@@ -22,16 +27,12 @@ namespace SqlCeCmd
             SetPassword
         }
 
-        public void Execute(EngineAction action)
+        internal void Execute(EngineAction action)
         {
             Execute(action, null);
         }
-        public SqlCeEngineHelper(string connectionString)
-        {
-            this.connectionString = connectionString;
-        }
 
-        public void Execute(EngineAction action, string newPassword)
+        internal void Execute(EngineAction action, string newPassword)
         {
             // Specify connection string for new database options; The following 
             // tokens are valid:

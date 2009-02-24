@@ -6,6 +6,6 @@
     <StartArguments>-d "Test" -e shrink -q</StartArguments>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugTest|AnyCPU' ">
-    <StartArguments>-d "Test" -e shrink -q</StartArguments>
+    <StartArguments>-d "Data Source=C:\nettiers\Pfizer_DB.sdf" -q "SELECT * FROM tblUserSync"</StartArguments>
   </PropertyGroup>
 </Project>
