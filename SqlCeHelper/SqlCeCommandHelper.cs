@@ -83,8 +83,6 @@ namespace SqlCeCmd
             List<Column> headings = new List<Column>();
             for (int i = 0; i < rdr.FieldCount; i++)
             {
-               Console.WriteLine(rdr.GetDataTypeName(i));
-
                 // 18 different types
                 // Calculate width as max of name or data type based width
                 switch (rdr.GetDataTypeName(i))
