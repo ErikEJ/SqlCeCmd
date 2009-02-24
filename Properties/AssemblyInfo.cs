@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("SqlCeCmd")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("sqlcmd utility for SQL Compact")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("http://erikej.blogspot.com")]
 [assembly: AssemblyProduct("SqlCeCmd")]
