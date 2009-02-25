@@ -32,13 +32,13 @@ namespace SqlCeCmd
             Execute(action, null);
         }
 
-        internal void Execute(EngineAction action, string newPassword)
+        internal void Execute(EngineAction action, string newConnectionString)
         {
             // Specify connection string for new database options; The following 
             // tokens are valid:
             //      - Password
             //      - LCID
-            //      - Encrypt
+            //      - Encryption Mode
             //      - Case Sensitive
             // 
             // All other SqlCeConnection.ConnectionString tokens are ignored
@@ -74,7 +74,7 @@ namespace SqlCeCmd
                             Console.WriteLine("Database successfully repaired");
                             break;
                         case EngineAction.SetPassword:
-                            engine.Compact(string.Format("Data Source=;Password={0};", newPassword));
+                            engine.Compact(newConnectionString);
                             Console.WriteLine("Database password successfully changed");
                             break;
                         default:
