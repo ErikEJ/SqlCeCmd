@@ -114,12 +114,6 @@ namespace SqlCeCmd
                 ICommandLineParser parser = new CommandLineParser();
                 if (parser.ParseArguments(args, options, Console.Error))
                 {
-                    //Console.WriteLine("New password: {0}", options.NewPassword);
-                    //Console.WriteLine();
-
-                    //Console.WriteLine("Command line query: {0}", options.QueryText);
-                    //Console.WriteLine();
-
                     int actionCount = 0;
                     Action action = Action.Undefined;
                     if (options.EngineAction != SqlCeEngineHelper.EngineAction.Undefined) { actionCount++; action = Action.RunEngineCommand; }
@@ -174,25 +168,11 @@ namespace SqlCeCmd
                         default:
                             break;
                     }
-                    Console.ReadLine();
-                    
-
-                    //Console.WriteLine();
-                    //if (options.OutputFile.Length > 0)
-                    //{
-                    //    headingInfo.WriteMessage(string.Format("Writing elaborated data: {0} ...", options.OutputFile));
-                    //}
-                    //else
-                    //{
-                    //    headingInfo.WriteMessage("Elaborated data:");
-                    //    Console.WriteLine("[...]");
-                    //}
-                    
+                                        
                     Environment.Exit(0);
                 }
                 else
                 {
-                    Console.ReadLine();
                     Environment.Exit(1);
                 }
             }
