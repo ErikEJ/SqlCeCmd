@@ -14,7 +14,7 @@ namespace SqlCeCmd
             Undefined,
             Query,
             QueryFromFile,
-            PasswordChange,
+            OptionChange,
             RunEngineCommand
         }
 
@@ -29,18 +29,18 @@ namespace SqlCeCmd
             public string ConnectionString = String.Empty;
 
             //[ -e shrink | compact | create | repairdelete | repairrecover | getinfo ]
-            //[ -z new password ]
+            //[ -z change database options ]
             //[ -q "cmdline query" ]
             //[ -i input_file(s) ] 
 
             //The 4 command options
             [Option("e", null,
-                    HelpText = "Run SQL Compact engine actions: \r\n        shrink|compact|create|repairdelete|repairrecover")]
+                    HelpText = "Run SQL Compact engine actions: \r\n        shrink|compact|create|upgrade|repairdelete|repairrecover")]
             public SqlCeEngineHelper.EngineAction EngineAction = SqlCeEngineHelper.EngineAction.Undefined;
 
             [Option("z", null,
-                    HelpText = "Change database password")]
-            public string NewPassword = String.Empty;
+                    HelpText = "Change database options:  \r\n        Password,Encryption Mode,Locale Id,Case Sensitivity,")]
+            public string NewOptions = String.Empty;
 
             [Option("q", null,
                     HelpText = "Command line query")]
@@ -117,7 +117,7 @@ namespace SqlCeCmd
                     int actionCount = 0;
                     Action action = Action.Undefined;
                     if (options.EngineAction != SqlCeEngineHelper.EngineAction.Undefined) { actionCount++; action = Action.RunEngineCommand; }
-                    if (!string.IsNullOrEmpty(options.NewPassword)) { actionCount++; action = Action.PasswordChange; }
+                    if (!string.IsNullOrEmpty(options.NewOptions)) { actionCount++; action = Action.OptionChange; }
                     if (!string.IsNullOrEmpty(options.QueryText)) { actionCount++; action = Action.Query; }
                     if (!string.IsNullOrEmpty(options.QueryFile)) { actionCount++; action = Action.QueryFromFile; }
 
@@ -150,15 +150,15 @@ namespace SqlCeCmd
                                 cmdHelper.RunCommands(options, true);
                             }
                             break;
-                        case Action.PasswordChange:
-                            if (!string.IsNullOrEmpty(options.NewPassword))
+                        case Action.OptionChange:
+                            if (!string.IsNullOrEmpty(options.NewOptions))
                             {
                                 SqlCeEngineHelper pwEngine = new SqlCeEngineHelper(options.ConnectionString);
-                                pwEngine.Execute(options.EngineAction, options.NewPassword);
+                                pwEngine.Execute(options.EngineAction, options.NewOptions);
                             }
                             else
                             {
-                                Console.WriteLine("New password required");
+                                Console.WriteLine("Connection string woth new options required");
                             }
                             break;
                         case Action.RunEngineCommand:

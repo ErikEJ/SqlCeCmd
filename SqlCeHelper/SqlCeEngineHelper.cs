@@ -21,10 +21,11 @@ namespace SqlCeCmd
             Shrink,
             Compact,
             Create,
+            Upgrade,
             RepairDelete,
             RepairRecover,
             GetInfo,
-            SetPassword
+            SetOption
         }
 
         internal void Execute(EngineAction action)
@@ -61,6 +62,10 @@ namespace SqlCeCmd
                             engine.Compact(null);
                             Console.WriteLine("Database successfully compacted");
                             break;
+                        case EngineAction.Upgrade:
+                            engine.Upgrade();
+                            Console.WriteLine("Database successfully upgraded");
+                            break;
                         case EngineAction.Create:
                             engine.CreateDatabase();
                             Console.WriteLine("Database successfully created");
@@ -73,9 +78,9 @@ namespace SqlCeCmd
                             engine.Repair(null, RepairOption.RecoverCorruptedRows);
                             Console.WriteLine("Database successfully repaired");
                             break;
-                        case EngineAction.SetPassword:
+                        case EngineAction.SetOption:
                             engine.Compact(newConnectionString);
-                            Console.WriteLine("Database password successfully changed");
+                            Console.WriteLine("Database option(s) successfully changed");
                             break;
                         default:
                             break;

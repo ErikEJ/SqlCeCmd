@@ -29,12 +29,15 @@ namespace SqlCeCmd.Tests
 
             testEngine.Execute(SqlCeEngineHelper.EngineAction.Compact);
 
-            testEngine.Execute(SqlCeEngineHelper.EngineAction.SetPassword, "123!!");
+            testEngine.Execute(SqlCeEngineHelper.EngineAction.SetOption, "Data Source=;Password=123!!");
 
             //Use new password
             testEngine = new SqlCeEngineHelper(string.Format("Data Source={0};Password=123!!", file));
 
             testEngine.Execute(SqlCeEngineHelper.EngineAction.Shrink);
+
+            //testEngine = new SqlCeEngineHelper("data source=C:\\Northwind.sdf");
+            //testEngine.Execute(SqlCeEngineHelper.EngineAction.Upgrade);
         }
 
         [Test]
