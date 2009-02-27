@@ -108,8 +108,7 @@ namespace SqlCeCmd
                         break;
 
                     case "Float":
-                        //TODO Not sure about size...
-                        width = Math.Max(21, rdr.GetName(i).Length);
+                        width = Math.Max(24, rdr.GetName(i).Length);
                         headings.Add(new Column { Name = rdr.GetName(i), Width = width, PadLeft = true });
                         break;
 
@@ -150,8 +149,7 @@ namespace SqlCeCmd
                         break;
 
                     case "Real":
-                        //TODO Not sure about size...
-                        width = Math.Max(21, rdr.GetName(i).Length);
+                        width = Math.Max(14, rdr.GetName(i).Length);
                         headings.Add(new Column { Name = rdr.GetName(i), Width = width, PadLeft = true });
                         break;
 
@@ -238,7 +236,7 @@ namespace SqlCeCmd
                     }
                     else
                     {
-                        Console.Write(string.Empty.PadRight(headings[i].Width));
+                        Console.Write("NULL".PadRight(headings[i].Width));
                     }
                     Console.Write(" ");
                 }                
