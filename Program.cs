@@ -18,7 +18,7 @@ namespace SqlCeCmd
             RunEngineCommand
         }
 
-        private static readonly HeadingInfo headingInfo = new HeadingInfo("SqlCeCmd", "0.1");
+        private static readonly HeadingInfo headingInfo = new HeadingInfo(System.Reflection.Assembly.GetExecutingAssembly().GetName().Name, System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString());
 
         internal class Options
         {

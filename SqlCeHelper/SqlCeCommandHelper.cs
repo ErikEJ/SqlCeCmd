@@ -93,7 +93,7 @@ namespace SqlCeCmd
                         break;
 
                     case "Binary":
-                        width = Math.Max(GetFieldSize(conn, rdr.GetName(i), maxWidth), rdr.GetName(i).Length) + 2;
+                        width = Math.Max(GetFieldSize(conn, rdr.GetName(i), maxWidth, cmd.CommandText), rdr.GetName(i).Length) + 2;
                         headings.Add(new Column { Name = rdr.GetName(i), Width = width, PadLeft = false });
                         break;
 
@@ -113,7 +113,7 @@ namespace SqlCeCmd
                         break;
 
                     case "Image":
-                        width = Math.Max(GetFieldSize(conn, rdr.GetName(i), maxWidth), rdr.GetName(i).Length) + 2;
+                        width = Math.Max(GetFieldSize(conn, rdr.GetName(i), maxWidth, cmd.CommandText), rdr.GetName(i).Length) + 2;
                         headings.Add(new Column { Name = rdr.GetName(i), Width = width, PadLeft = false });
                         break;
 
@@ -128,23 +128,22 @@ namespace SqlCeCmd
                         break;
 
                     case "NChar":
-                        width = Math.Max(GetFieldSize(conn, rdr.GetName(i), maxWidth), rdr.GetName(i).Length);
+                        width = Math.Max(GetFieldSize(conn, rdr.GetName(i), maxWidth, cmd.CommandText), rdr.GetName(i).Length);
                         headings.Add(new Column { Name = rdr.GetName(i), Width = width, PadLeft = false });
                         break;
 
                     case "NText":
-                        width = Math.Max(GetFieldSize(conn, rdr.GetName(i), maxWidth), rdr.GetName(i).Length);
+                        width = Math.Max(GetFieldSize(conn, rdr.GetName(i), maxWidth, cmd.CommandText), rdr.GetName(i).Length);
                         headings.Add(new Column { Name = rdr.GetName(i), Width = width, PadLeft = false });
                         break;
 
                     case "Numeric":
-                        //TODO Not sure about size...
                         width = Math.Max(21, rdr.GetName(i).Length);
                         headings.Add(new Column { Name = rdr.GetName(i), Width = width, PadLeft = true });
                         break;
 
                     case "NVarChar":
-                        width = Math.Max(GetFieldSize(conn, rdr.GetName(i), maxWidth), rdr.GetName(i).Length);
+                        width = Math.Max(GetFieldSize(conn, rdr.GetName(i), maxWidth, cmd.CommandText), rdr.GetName(i).Length);
                         headings.Add(new Column { Name = rdr.GetName(i), Width = width, PadLeft = false });
                         break;
 
@@ -174,7 +173,7 @@ namespace SqlCeCmd
                         break;
 
                     case "VarBinary":
-                        width = Math.Max(GetFieldSize(conn, rdr.GetName(i), maxWidth), rdr.GetName(i).Length) + 2;
+                        width = Math.Max(GetFieldSize(conn, rdr.GetName(i), maxWidth, cmd.CommandText), rdr.GetName(i).Length) + 2;
                         headings.Add(new Column { Name = rdr.GetName(i), Width = width, PadLeft = false });
                         break;
 
@@ -259,9 +258,9 @@ namespace SqlCeCmd
                 return CommandExecute.Undefined;
             }
             
-            string test = commandText.Trim().ToUpper(System.Globalization.CultureInfo.InvariantCulture);
+            string test = commandText.Trim();
 
-            if (test.StartsWith("SELECT "))
+            if (test.ToLowerInvariant().StartsWith("select "))
             {
                 return CommandExecute.DataReader;
             }
@@ -271,28 +270,38 @@ namespace SqlCeCmd
             }
         }
 
-        private int GetFieldSize(SqlCeConnection conn, string fieldName, int maxWidth)
+        private int GetFieldSize(SqlCeConnection conn, string fieldName, int maxWidth, string commandText)
         { 
-            //TODO Should include tablename is SQL statement here...
-            SqlCeCommand cmd = new SqlCeCommand(string.Format("SELECT CHARACTER_MAXIMUM_LENGTH FROM INFORMATION_SCHEMA.COLUMNS WHERE COLUMN_NAME = '{0}'", fieldName));
-            cmd.Connection = conn;
-            Object val = cmd.ExecuteScalar();
-            if (val != null)
+            using (SqlCeCommand cmdSize = new SqlCeCommand(commandText))
             {
-                if ((int)val < maxWidth)
+                cmdSize.Connection = conn;
+                SqlCeDataReader rdr = cmdSize.ExecuteReader(System.Data.CommandBehavior.SchemaOnly | System.Data.CommandBehavior.KeyInfo);
+                System.Data.DataTable schemaTable = rdr.GetSchemaTable();
+                System.Data.DataView schemaView = new System.Data.DataView(schemaTable);
+                schemaView.RowFilter = string.Format("ColumnName = '{0}'", fieldName);
+                if (schemaView.Count > 0)
                 {
-                    return (int)val;
-                }
-                else
-                {
-                    return maxWidth;
+                    string colName = schemaView[0].Row["BaseColumnName"].ToString();
+                    string tabName = schemaView[0].Row["BaseTableName"].ToString();
+                    using (SqlCeCommand cmd = new SqlCeCommand(string.Format("SELECT CHARACTER_MAXIMUM_LENGTH FROM INFORMATION_SCHEMA.COLUMNS WHERE COLUMN_NAME = '{0}' AND TABLE_NAME = '{1}'", colName, tabName)))
+                    {
+                        cmd.Connection = conn;
+                        Object val = cmd.ExecuteScalar();
+                        if (val != null)
+                        {
+                            if ((int)val < maxWidth)
+                            {
+                                return (int)val;
+                            }
+                            else
+                            {
+                                return maxWidth;
+                            }
+                        }
+                    }
                 }
             }
-            else
-            {
-                return -1;
-            }
-            
+            return -1;            
         }
 
         #region IDisposable Members
