@@ -46,13 +46,13 @@ namespace SqlCeCmd.Tests
             SqlCeCommandHelper cmdHelper = new SqlCeCommandHelper(@"Data Source=C:\Data\SQLCE\ExportSqlCETest\Northwind.sdf;");
             Program.Options options = new Program.Options();
             options.QueryText = "SELECT * FROM [Test]";
-            cmdHelper.RunCommands(options);
-            options.QueryText = "SELECT * FROM [Orders]";
-            cmdHelper.RunCommands(options);
-            options.QueryText = "SELECT * FROM [Order Details]";
-            cmdHelper.RunCommands(options);
-            options.QueryText = "SELECT * FROM [Employees]";
-            cmdHelper.RunCommands(options);            
+            //cmdHelper.RunCommands(options);
+            //options.QueryText = "SELECT * FROM [Orders]";
+            //cmdHelper.RunCommands(options);
+            //options.QueryText = "SELECT * FROM [Order Details]";
+            //cmdHelper.RunCommands(options);
+            //options.QueryText = "SELECT * FROM [Employees]";
+            //cmdHelper.RunCommands(options);            
         }
 
         [Test]

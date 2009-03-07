@@ -58,7 +58,7 @@ namespace SqlCeCmd
                 {
                     if (execute == CommandExecute.DataReader)
                     {
-                        rows = RunDataReader(cmd, conn);
+                        rows = RunDataReader(cmd, conn, options.ColumnSeparator, options.RemoveSpaces);
                     }
                     if (execute == CommandExecute.NonQuery)
                     {
@@ -74,12 +74,13 @@ namespace SqlCeCmd
             }
         }
 
-        private int RunDataReader(SqlCeCommand cmd, SqlCeConnection conn)
+        private int RunDataReader(SqlCeCommand cmd, SqlCeConnection conn, Char colSepChar, bool removeSpaces)
         {
             cmd.Connection = conn;
             SqlCeDataReader rdr = cmd.ExecuteReader();
             int rows = 0;
             int maxWidth = 256;
+            string colSep = colSepChar.ToString();
             List<Column> headings = new List<Column>();
             for (int i = 0; i < rdr.FieldCount; i++)
             {
@@ -188,16 +189,30 @@ namespace SqlCeCmd
                     // Write headers
                     for (int x = 0; x < rdr.FieldCount; x++)
                     {
-                        Console.Write(headings[x].Name.PadRight(headings[x].Width));
-                        Console.Write(" ");
+                        if (removeSpaces)
+                        {
+                            Console.Write(headings[x].Name);
+                        }
+                        else
+                        {
+                            Console.Write(headings[x].Name.PadRight(headings[x].Width));
+                        }
+                        Console.Write(colSep);
                     }
                     Console.WriteLine();
                     for (int x = 0; x < rdr.FieldCount; x++)
                     {
                         System.Text.StringBuilder sb = new System.Text.StringBuilder();
-                        sb.Append('-', headings[x].Width);
+                        if (removeSpaces)
+                        {
+                            sb.Append('-', headings[x].Name.Length);
+                        }
+                        else
+                        {
+                            sb.Append('-', headings[x].Width);
+                        }
                         Console.Write(sb.ToString());
-                        Console.Write(" ");
+                        Console.Write(colSep);
                     }
                     Console.WriteLine();
                 }
@@ -224,7 +239,11 @@ namespace SqlCeCmd
                             value = Convert.ToString(rdr[i], System.Globalization.CultureInfo.InvariantCulture);
                         }
 
-                        if (headings[i].PadLeft)
+                        if (removeSpaces)
+                        {
+                            Console.Write(value);
+                        }
+                        else if (headings[i].PadLeft)
                         {
                             Console.Write(value.PadLeft(headings[i].Width));
                         }
@@ -235,9 +254,16 @@ namespace SqlCeCmd
                     }
                     else
                     {
-                        Console.Write("NULL".PadRight(headings[i].Width));
+                        if (removeSpaces)
+                        {
+                            Console.Write("NULL");
+                        }
+                        else
+                        {
+                            Console.Write("NULL".PadRight(headings[i].Width));
+                        }
                     }
-                    Console.Write(" ");
+                    Console.Write(colSep);
                 }                
                 rows++;
                 Console.WriteLine();
