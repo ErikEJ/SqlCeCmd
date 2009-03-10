@@ -9,6 +9,10 @@ namespace SqlCeCmd
     {
         private SqlCeConnection conn = new SqlCeConnection();
 
+        private System.Globalization.CultureInfo cultureInfo = System.Globalization.CultureInfo.InvariantCulture;
+        private bool writeHeaders = true;
+        private int headerInterval = Int32.MaxValue;
+
         private enum CommandExecute
         {
             Undefined,
@@ -24,34 +28,49 @@ namespace SqlCeCmd
 
         internal void RunCommands(SqlCeCmd.Program.Options options, bool useFile)
         {
-            System.IO.StreamReader sr = System.IO.File.OpenText(options.QueryFile);
-            StringBuilder sb = new StringBuilder(10000);
-            while (!sr.EndOfStream)
+            using (System.IO.StreamReader sr = System.IO.File.OpenText(options.QueryFile))
             {
-                string line = sr.ReadLine();
-                if (line.Equals("GO", StringComparison.InvariantCultureIgnoreCase))
+
+                StringBuilder sb = new StringBuilder(10000);
+                while (!sr.EndOfStream)
                 {
-                    Console.WriteLine("Executing: " + Environment.NewLine + sb.ToString());
-                    options.QueryText = sb.ToString();
-                    RunCommands(options);
-                    sb.Remove(0, sb.Length);
-                }
-                else
-                {
-                    if (!line.StartsWith("--"))
+                    string line = sr.ReadLine();
+                    if (line.Equals("GO", StringComparison.InvariantCultureIgnoreCase))
                     {
-                        sb.Append(line);
-                        sb.Append(Environment.NewLine);
+                        Console.WriteLine("Executing: " + Environment.NewLine + sb.ToString());
+                        options.QueryText = sb.ToString();
+                        RunCommand(options);
+                        sb.Remove(0, sb.Length);
+                    }
+                    else
+                    {
+                        if (!line.StartsWith("--"))
+                        {
+                            sb.Append(line);
+                            sb.Append(Environment.NewLine);
+                        }
                     }
                 }
             }
         }
 
-        internal void RunCommands(SqlCeCmd.Program.Options options)
+        internal void RunCommand(SqlCeCmd.Program.Options options)
         {
             //TODO Parse formatting options (and implement use of same)
             using (SqlCeCommand cmd = new SqlCeCommand(options.QueryText))
             {
+                if (options.UseCurrentCulture)
+                {
+                    cultureInfo = System.Globalization.CultureInfo.CurrentCulture;
+                }
+                if (options.Headers == 0)
+                {
+                    writeHeaders = false;
+                }
+                if (options.Headers > 0)
+                {
+                    headerInterval = options.Headers;
+                }
                 CommandExecute execute = FindExecuteType(options.QueryText);
                 int rows = 0;
                 if (execute != CommandExecute.Undefined)
@@ -65,7 +84,7 @@ namespace SqlCeCmd
                         rows = RunNonQuery(cmd, conn);
                     }
                     Console.WriteLine();
-                    Console.WriteLine(string.Format("({0} rows affected)", rows.ToString(System.Globalization.CultureInfo.InvariantCulture)));
+                    Console.WriteLine(string.Format("({0} rows affected)", rows.ToString(cultureInfo)));
                 }
                 else
                 {
@@ -184,9 +203,12 @@ namespace SqlCeCmd
             }
             while (rdr.Read())
             {
-                if (rows == 0)
+                bool doWrite = (rows == 0 && writeHeaders);
+                if (!doWrite && rows > 0)
+                    doWrite = ((rows % headerInterval) == 0);
+
+                if (doWrite)
                 {
-                    // Write headers
                     for (int x = 0; x < rdr.FieldCount; x++)
                     {
                         if (removeSpaces)
@@ -236,7 +258,7 @@ namespace SqlCeCmd
                         }
                         else
                         {
-                            value = Convert.ToString(rdr[i], System.Globalization.CultureInfo.InvariantCulture);
+                            value = Convert.ToString(rdr[i], cultureInfo);
                         }
 
                         if (removeSpaces)
