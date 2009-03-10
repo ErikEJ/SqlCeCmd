@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using CommandLine;
 using CommandLine.Text;
+using System.IO;
 
 namespace SqlCeCmd
 {
@@ -50,6 +51,11 @@ namespace SqlCeCmd
                     HelpText = "SQL query input file")]
             public string QueryFile = String.Empty;
 
+            [Option("o", null,
+            HelpText = "output file")]
+            public string OutputFile = String.Empty;
+
+
             //[ -R use client regional settings ]
             //[ -s col_separator ] [ -w column_width ] 
             //[ -W remove trailing spaces ]
@@ -60,6 +66,10 @@ namespace SqlCeCmd
             [Option("R", null,
                    HelpText = "Use client regional settings")]
             public bool UseCurrentCulture = false;
+
+            [Option("h", null,
+                   HelpText = "Headers - 0 to Int32.MaxValue")]
+            public int Headers = Int32.MinValue;
 
             [Option("s", null,
                      HelpText = "Column separator")]
@@ -108,6 +118,9 @@ namespace SqlCeCmd
 
         private static void Main(string[] args)
         {
+            FileStream ostrm = null;
+            StreamWriter writer = null;
+            TextWriter oldOut = Console.Out;
             try
             {
                 Options options = new Options();
@@ -124,15 +137,38 @@ namespace SqlCeCmd
                     if (actionCount == 0)
                     {
                         Console.WriteLine("Either -q, -i, -e or -z required");
-                        Console.ReadLine();
                         Environment.Exit(1);                        
                     }
                     // actionCount must be exactly 1
                     if (actionCount > 1)
                     {
                         Console.WriteLine("Only one of either -q, -i, -e or -z required");
-                        Console.ReadLine();
                         Environment.Exit(1);                                                
+                    }
+                    if (options.Headers != Int32.MinValue)
+                    { 
+                        if (options.Headers >= 0 && options.Headers <= Int32.MaxValue)
+                        {}
+                        else
+                        {
+                            Console.WriteLine("Headers value must be a value between 0 and 2147483647");
+                            Environment.Exit(1);                                                
+                        }
+                    }
+                    if (!string.IsNullOrEmpty(options.OutputFile))
+                    {
+                        try
+                        {
+                            ostrm = new FileStream(options.OutputFile, FileMode.Create, FileAccess.Write);
+                            writer = new StreamWriter(ostrm);
+                        }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine(string.Format("Cannot open {0} for writing", options.OutputFile));
+                            Console.WriteLine(e.Message);
+                            return;
+                        }
+                        Console.SetOut(writer);
                     }
                     switch (action)
                     {
@@ -141,7 +177,7 @@ namespace SqlCeCmd
                         case Action.Query:
                             using (SqlCeCommandHelper cmdHelper = new SqlCeCommandHelper(options.ConnectionString))
                             {
-                                cmdHelper.RunCommands(options);
+                                cmdHelper.RunCommand(options);
                             }
                             break;
                         case Action.QueryFromFile:
@@ -168,6 +204,11 @@ namespace SqlCeCmd
                         default:
                             break;
                     }
+
+                    if (writer != null)
+                        writer.Close();
+                    if (ostrm != null)
+                        ostrm.Close();
                                         
                     Environment.Exit(0);
                 }
@@ -179,10 +220,13 @@ namespace SqlCeCmd
 
             catch (System.Data.SqlServerCe.SqlCeException e)
             {
+                Console.SetOut (oldOut);
                 SqlCeUtility.ShowErrors(e);
             }
             catch (Exception ex)
             {
+                Console.SetOut (oldOut);
+            
                 Console.WriteLine("Error: " + ex.ToString());
             }
 
