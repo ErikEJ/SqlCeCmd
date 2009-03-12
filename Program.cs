@@ -29,11 +29,6 @@ namespace SqlCeCmd
                     HelpText = "SQL Compact connection string")]
             public string ConnectionString = String.Empty;
 
-            //[ -e shrink | compact | create | repairdelete | repairrecover | getinfo ]
-            //[ -z change database options ]
-            //[ -q "cmdline query" ]
-            //[ -i input_file(s) ] 
-
             //The 4 command options
             [Option("e", null,
                     HelpText = "Run SQL Compact engine actions: \r\n        shrink|compact|create|upgrade|repairdelete|repairrecover")]
@@ -51,16 +46,11 @@ namespace SqlCeCmd
                     HelpText = "SQL query input file")]
             public string QueryFile = String.Empty;
 
+            //Output options
+
             [Option("o", null,
             HelpText = "output file")]
             public string OutputFile = String.Empty;
-
-
-            //[ -R use client regional settings ]
-            //[ -s col_separator ] [ -w column_width ] 
-            //[ -W remove trailing spaces ]
-            //[ -k [ 1 | 2 ] remove[replace] control characters ] 
-            //[ -y display_width ] [-Y display_width ]
 
             //Output formatting options
             [Option("R", null,
@@ -74,11 +64,6 @@ namespace SqlCeCmd
             [Option("s", null,
                      HelpText = "Column separator")]
             public Char ColumnSeparator = Convert.ToChar(" ");
-
-            //Greater than 8 and less than 65536
-            [Option("w", null,
-                    HelpText = "Column width")]
-            public int ColumnWidth = 80;
 
             [Option("W", null,
                     HelpText = "Remove trailing spaces")]
@@ -95,6 +80,9 @@ namespace SqlCeCmd
             [Option("Y", null,
                     HelpText = "Display width (nchar, nvarchar)")]
             public int ColumnWidthChar = 256;
+
+
+
 
             #endregion
 
