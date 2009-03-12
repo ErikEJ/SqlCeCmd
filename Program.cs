@@ -69,18 +69,21 @@ namespace SqlCeCmd
                     HelpText = "Remove trailing spaces")]
             public bool RemoveSpaces = false;
 
-            [Option("k", null,
-                    HelpText = "Remove or replace control characters. Range 0,1,2")]
-            public int RemReplControlChars = 0;
+            //[Option("k", null,
+            //        HelpText = "Remove or replace control characters. Range 0,1,2")]
+            //public int RemReplControlChars = 0;
 
-            [Option("y", null,
-                    HelpText = "Display width (image, ntext)")]
-            public int ColumnWidthBlob = 0; // 1048576 = 1 MB
+            //[Option("y", null,
+            //        HelpText = "Display width (image, ntext)")]
+            //public int ColumnWidthBlob = 0; // 1048576 = 1 MB
 
-            [Option("Y", null,
-                    HelpText = "Display width (nchar, nvarchar)")]
-            public int ColumnWidthChar = 256;
+            //[Option("Y", null,
+            //        HelpText = "Display width (nchar, nvarchar)")]
+            //public int ColumnWidthChar = 256;
 
+            //[Option("b", null,
+            //        HelpText = "On error batch abort")]
+            //public bool BatchAbort = false;
 
 
 
