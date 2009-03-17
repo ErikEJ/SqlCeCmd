@@ -12,6 +12,7 @@ namespace SqlCeCmd
         private System.Globalization.CultureInfo cultureInfo = System.Globalization.CultureInfo.InvariantCulture;
         private bool writeHeaders = true;
         private int headerInterval = Int32.MaxValue;
+        private bool xmlOutput = false;
 
         private enum CommandExecute
         {
@@ -61,15 +62,19 @@ namespace SqlCeCmd
             {
                 if (options.UseCurrentCulture)
                 {
-                    cultureInfo = System.Globalization.CultureInfo.CurrentCulture;
+                    this.cultureInfo = System.Globalization.CultureInfo.CurrentCulture;
                 }
                 if (options.Headers == 0)
                 {
-                    writeHeaders = false;
+                    this.writeHeaders = false;
                 }
                 if (options.Headers > 0)
                 {
-                    headerInterval = options.Headers;
+                    this.headerInterval = options.Headers;
+                }
+                if (options.MakeXML)
+                {
+                    this.xmlOutput = true;
                 }
                 CommandExecute execute = FindExecuteType(options.QueryText);
                 int rows = 0;
@@ -77,7 +82,14 @@ namespace SqlCeCmd
                 {
                     if (execute == CommandExecute.DataReader)
                     {
-                        rows = RunDataReader(cmd, conn, options.ColumnSeparator, options.RemoveSpaces);
+                        if (this.xmlOutput)
+                        {
+                            rows = RunDataTable(cmd, conn);
+                        }
+                        else
+                        {
+                            rows = RunDataReader(cmd, conn, options.ColumnSeparator, options.RemoveSpaces);
+                        }
                     }
                     if (execute == CommandExecute.NonQuery)
                     {
@@ -91,6 +103,15 @@ namespace SqlCeCmd
                     Console.WriteLine("Invalid command text");
                 }
             }
+        }
+
+        private int RunDataTable(SqlCeCommand cmd, SqlCeConnection conn)
+        {
+            cmd.Connection = conn;
+            System.Data.DataTable table = new System.Data.DataTable();
+            table.Load(cmd.ExecuteReader());
+            table.WriteXml(Console.Out, System.Data.XmlWriteMode.WriteSchema);
+            return table.Rows.Count;
         }
 
         private int RunDataReader(SqlCeCommand cmd, SqlCeConnection conn, Char colSepChar, bool removeSpaces)

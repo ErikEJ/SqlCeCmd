@@ -69,6 +69,10 @@ namespace SqlCeCmd
                     HelpText = "Remove trailing spaces")]
             public bool RemoveSpaces = false;
 
+            [Option("x", null,
+                    HelpText = "Output SELECTs as XML")]
+            public bool MakeXML = false;
+
             //[Option("k", null,
             //        HelpText = "Remove or replace control characters. Range 0,1,2")]
             //public int RemReplControlChars = 0;
