@@ -47,6 +47,7 @@ namespace SqlCeCmd.Tests
             Program.Options options = new Program.Options();
             options.OutputFile = @"C:\out.txt";
             options.Headers = 4;
+            options.MakeXML = true;
             options.QueryText = "SELECT * FROM [Orders]";
             cmdHelper.RunCommand(options);
             //options.QueryText = "SELECT * FROM [Orders]";
