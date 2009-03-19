@@ -57,7 +57,6 @@ namespace SqlCeCmd
 
         internal void RunCommand(SqlCeCmd.Program.Options options)
         {
-            //TODO Parse formatting options (and implement use of same)
             using (SqlCeCommand cmd = new SqlCeCommand(options.QueryText))
             {
                 if (options.UseCurrentCulture)
@@ -89,14 +88,16 @@ namespace SqlCeCmd
                         else
                         {
                             rows = RunDataReader(cmd, conn, options.ColumnSeparator, options.RemoveSpaces);
+                            Console.WriteLine();
+                            Console.WriteLine(string.Format("({0} rows affected)", rows.ToString(cultureInfo)));
                         }
                     }
                     if (execute == CommandExecute.NonQuery)
                     {
                         rows = RunNonQuery(cmd, conn);
+                        Console.WriteLine();
+                        Console.WriteLine(string.Format("({0} rows affected)", rows.ToString(cultureInfo)));
                     }
-                    Console.WriteLine();
-                    Console.WriteLine(string.Format("({0} rows affected)", rows.ToString(cultureInfo)));
                 }
                 else
                 {
@@ -261,7 +262,6 @@ namespace SqlCeCmd
                 }
                 for (int i = 0; i < rdr.FieldCount; i++)
                 {                   
-                    //TODO Format output better...
                     if (!rdr.IsDBNull(i))
                     {
                         string value = string.Empty;
