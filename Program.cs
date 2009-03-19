@@ -73,24 +73,6 @@ namespace SqlCeCmd
                     HelpText = "Output SELECTs as XML")]
             public bool MakeXML = false;
 
-            //[Option("k", null,
-            //        HelpText = "Remove or replace control characters. Range 0,1,2")]
-            //public int RemReplControlChars = 0;
-
-            //[Option("y", null,
-            //        HelpText = "Display width (image, ntext)")]
-            //public int ColumnWidthBlob = 0; // 1048576 = 1 MB
-
-            //[Option("Y", null,
-            //        HelpText = "Display width (nchar, nvarchar)")]
-            //public int ColumnWidthChar = 256;
-
-            //[Option("b", null,
-            //        HelpText = "On error batch abort")]
-            //public bool BatchAbort = false;
-
-
-
             #endregion
 
             #region Specialized Option Attribute
@@ -102,9 +84,6 @@ namespace SqlCeCmd
                 HelpText help = new HelpText(Program.headingInfo);
                 help.Copyright = new CopyrightInfo("Erik Ejlskov Jensen", 2009, 2009);
                 help.AddPreOptionsLine("Contact me at my blog: http://erikej.blogspot.com");
-                //help.AddPreOptionsLine("Usage: SampleApp -rMyData.in -wMyData.out --calculate");
-                //help.AddPreOptionsLine(string.Format("       SampleApp -rMyData.in -i -j{0} file0.def file1.def", 9.7));
-                //help.AddPreOptionsLine("       SampleApp -rMath.xml -wReport.bin -o *;/;+;-");
                 help.AddOptions(this);
                 return help;
             }
