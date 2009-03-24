@@ -26,7 +26,7 @@ namespace SqlCeCmd
             #region Standard Option Attribute
             [Option("d", null,
                     Required = true,
-                    HelpText = "SQL Compact connection string")]
+                    HelpText = "SQL Compact connection string\r\n")]
             public string ConnectionString = String.Empty;
 
             //The 4 command options
@@ -35,7 +35,7 @@ namespace SqlCeCmd
             public SqlCeEngineHelper.EngineAction EngineAction = SqlCeEngineHelper.EngineAction.Undefined;
 
             [Option("z", null,
-                    HelpText = "Change database options:  \r\n        Password,Encryption Mode,Locale Id,Case Sensitivity,")]
+                    HelpText = "Change database options:  \r\n        Password,Encryption Mode,Locale Id,Case Sensitivity")]
             public string NewOptions = String.Empty;
 
             [Option("q", null,
@@ -43,14 +43,18 @@ namespace SqlCeCmd
             public string QueryText = String.Empty;
 
             [Option("i", null,
-                    HelpText = "SQL query input file")]
+                    HelpText = "SQL query input file\r\n")]
             public string QueryFile = String.Empty;
 
             //Output options
 
             [Option("o", null,
-            HelpText = "output file")]
+                HelpText = "Output file")]
             public string OutputFile = String.Empty;
+
+            [Option("v", null,
+                HelpText = "Display database information")]
+            public bool ShowInfo = false;
 
             //Output formatting options
             [Option("R", null,
@@ -73,17 +77,20 @@ namespace SqlCeCmd
                     HelpText = "Output SELECTs as XML")]
             public bool MakeXML = false;
 
+
+
             #endregion
 
             #region Specialized Option Attribute
 
             [HelpOption("?", null,  
-                    HelpText = "Display this help screen.")]
+                    HelpText = "Display this help screen")]
             public string GetUsage()
             {
                 HelpText help = new HelpText(Program.headingInfo);
                 help.Copyright = new CopyrightInfo("Erik Ejlskov Jensen", 2009, 2009);
                 help.AddPreOptionsLine("Contact me at my blog: http://erikej.blogspot.com");
+                help.AddPreOptionsLine("Check for updates at: http://sqlcecmd.codeplex.com");
                 help.AddOptions(this);
                 return help;
             }
@@ -143,6 +150,12 @@ namespace SqlCeCmd
                             return;
                         }
                         Console.SetOut(writer);
+                    }
+                    if (options.ShowInfo)
+                    {
+                        SqlCeEngineHelper engine = new SqlCeEngineHelper(options.ConnectionString);
+                        engine.Execute(SqlCeEngineHelper.EngineAction.GetInfo, null);
+                        engine.CreateInfo();
                     }
                     switch (action)
                     {

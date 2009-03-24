@@ -94,17 +94,33 @@ namespace SqlCeCmd
                     cn.Open();
                     List<KeyValuePair<string, string>> valueList = new List<KeyValuePair<string, string>>();
                     // 3.5 or later only API
+                    
                     valueList = cn.GetDatabaseInfo();
                     valueList.Add(new KeyValuePair<string, string>("Database", cn.Database));
-                    valueList.Add(new KeyValuePair<string, string>("ServerVersion", cn.ServerVersion));
+                    valueList.Add(new KeyValuePair<string, string>("ServerVersion", cn.ServerVersion));                    
+                    if (System.IO.File.Exists(cn.Database))
+                    {
+                        System.IO.FileInfo fi = new System.IO.FileInfo(cn.Database);
+                        valueList.Add(new KeyValuePair<string, string>("DatabaseSize", fi.Length.ToString()));
+                        valueList.Add(new KeyValuePair<string, string>("Created", fi.CreationTime.ToShortDateString() + " " + fi.CreationTime.ToShortTimeString()));
+                    }
+                    valueList.Add(new KeyValuePair<string, string>(string.Empty, string.Empty));
+                    valueList.Insert(0, new KeyValuePair<string, string>("SqlCeCmd", "Database Information"));
+
+
                     foreach (KeyValuePair<string, string> pair in valueList)
                     {
                         Console.WriteLine(string.Format("{0}: {1}", pair.Key, pair.Value));
                     }
+                    
                 }
             }
             return;
         }
 
+        internal void CreateInfo()
+        {
+            
+        }
     }
 }
