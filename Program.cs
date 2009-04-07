@@ -88,7 +88,7 @@ namespace SqlCeCmd
             public string GetUsage()
             {
                 HelpText help = new HelpText(Program.headingInfo);
-                help.Copyright = new CopyrightInfo("Erik Ejlskov Jensen", 2009, 2009);
+                help.Copyright = new CopyrightInfo("Erik Ejlskov Jensen", 2009);
                 help.AddPreOptionsLine("Contact me at my blog: http://erikej.blogspot.com");
                 help.AddPreOptionsLine("Check for updates at: http://sqlcecmd.codeplex.com");
                 help.AddOptions(this);
