@@ -107,7 +107,6 @@ namespace SqlCeCmd
                     valueList.Add(new KeyValuePair<string, string>(string.Empty, string.Empty));
                     valueList.Insert(0, new KeyValuePair<string, string>("SqlCeCmd", "Database Information"));
 
-
                     foreach (KeyValuePair<string, string> pair in valueList)
                     {
                         Console.WriteLine(string.Format("{0}: {1}", pair.Key, pair.Value));
