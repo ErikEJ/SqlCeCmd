@@ -177,6 +177,7 @@ namespace SqlCeCmd
                             if (!string.IsNullOrEmpty(options.NewOptions))
                             {
                                 SqlCeEngineHelper pwEngine = new SqlCeEngineHelper(options.ConnectionString);
+                                options.EngineAction = SqlCeEngineHelper.EngineAction.SetOption;
                                 pwEngine.Execute(options.EngineAction, options.NewOptions);
                             }
                             else
