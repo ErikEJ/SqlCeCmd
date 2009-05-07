@@ -48,7 +48,7 @@ namespace SqlCeCmd.Tests
             options.OutputFile = @"C:\out.txt";
             options.Headers = 4;
             options.MakeXML = true;
-            options.QueryText = "SELECT * FROM [Orders]";
+            options.QueryText = "Insert Into [Tree] ([Id],[RowId],[TagId],[ParentTreeId],[Latitude],[Longitude],[Active],[Weight]) Values (1538,22,N'13-1225',null,null,null,1,null);";
             cmdHelper.RunCommand(options);
             //options.QueryText = "SELECT * FROM [Orders]";
             //cmdHelper.RunCommand(options);
@@ -76,6 +76,14 @@ namespace SqlCeCmd.Tests
             cmdHelper.RunCommands(options, true);
         }
 
+        [Test]
+        public void ExerciseParser()
+        {
+            System.Data.SqlServerCe.SqlCeConnection conn = new System.Data.SqlServerCe.SqlCeConnection(@"data source=C:\Data\SQLCE\ExportSqlCETest\MunroSoft.PatchSpy.sdf");
+            conn.Open();
+            InsertParser parser = new InsertParser(conn);
+            parser.AddRow("");
+        }
 
         //[Test]
         //[ExpectedException(typeof(ArgumentNullException))]

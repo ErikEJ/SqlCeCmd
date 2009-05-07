@@ -13,12 +13,18 @@ namespace SqlCeCmd
         private bool writeHeaders = true;
         private int headerInterval = Int32.MaxValue;
         private bool xmlOutput = false;
+        private bool useBatchInsert = false;
+        private string currentTable = string.Empty;
+        private SqlCeUpdatableRecord rec;
+        private SqlCeResultSet rs;
+        private InsertParser insertParser;
 
         private enum CommandExecute
         {
             Undefined,
             DataReader,
-            NonQuery
+            NonQuery,
+            Insert
         }
         
         internal SqlCeCommandHelper(string connectionString)
@@ -75,6 +81,10 @@ namespace SqlCeCmd
                 {
                     this.xmlOutput = true;
                 }
+                if (options.UseBatch)
+                {
+                    this.useBatchInsert = true;
+                }
                 CommandExecute execute = FindExecuteType(options.QueryText);
                 int rows = 0;
                 if (execute != CommandExecute.Undefined)
@@ -97,6 +107,24 @@ namespace SqlCeCmd
                         rows = RunNonQuery(cmd, conn);
                         Console.WriteLine();
                         Console.WriteLine(string.Format("({0} rows affected)", rows.ToString(cultureInfo)));
+                    }
+                    if (execute == CommandExecute.Insert)
+                    {
+                        if (useBatchInsert)
+                        {
+                            rows = RunBatchInsert(cmd, conn);
+                        }
+                        else
+                        {
+                            rows = RunNonQuery(cmd, conn);
+                            Console.WriteLine();
+                            Console.WriteLine(string.Format("({0} rows affected)", rows.ToString(cultureInfo)));
+                        }
+                    }
+                    if (useBatchInsert)
+                    {
+                        currentTable = Guid.NewGuid().ToString();
+                        RunBatchInsert(cmd, conn);
                     }
                 }
                 else
@@ -314,6 +342,60 @@ namespace SqlCeCmd
             return rows;
         }
 
+        private int RunBatchInsert(SqlCeCommand cmd, SqlCeConnection conn)
+        {
+            //TODO InsertParser
+            if (insertParser != null && insertParser.TableName != currentTable)
+            {
+                ////Do the actual inserts now ("batching")
+                cmd.CommandText = insertParser.TableName;
+                cmd.CommandType = System.Data.CommandType.TableDirect;
+                rs = cmd.ExecuteResultSet(ResultSetOptions.Updatable);
+                rec = rs.CreateRecord();                
+
+                columns.Clear();
+                foreach (List<KeyValuePair<string, object>> row in insertParser.Rows)                
+                {
+                    foreach (KeyValuePair<string, object> pair in row)
+                    {
+                        if (pair.Value != null)
+                        {
+                            rs.SetValue(GetOrdinal(pair.Key, rs), pair.Value);
+                        }
+                    }
+                }
+                insertParser = null;
+                Console.WriteLine();
+                Console.WriteLine(string.Format("({0} rows affected)", insertParser.Rows.Count.ToString(cultureInfo)));
+            }
+            else
+            {
+                if (insertParser == null)
+                {
+                    insertParser = new InsertParser(conn);
+                }
+                insertParser.AddRow(cmd.CommandText);
+            }
+            return 0;
+        }
+
+        Dictionary<string, int> columns = new Dictionary<string, int>();
+
+        protected int GetOrdinal(string column, SqlCeResultSet rs)
+        {
+            if (columns.ContainsKey(column))
+            {
+                return columns[column];
+            }
+            else
+            {
+                int ordinal = rs.GetOrdinal(column);
+                columns[column] = ordinal;
+                return ordinal;
+            }
+        }
+
+
         private int RunNonQuery(SqlCeCommand cmd, SqlCeConnection conn)
         {
             cmd.Connection = conn;
@@ -332,6 +414,10 @@ namespace SqlCeCmd
             if (test.ToLowerInvariant().StartsWith("select "))
             {
                 return CommandExecute.DataReader;
+            }
+            if (test.ToLowerInvariant().StartsWith("insert "))
+            {
+                return CommandExecute.Insert;
             }
             else
             {
