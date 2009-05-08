@@ -136,6 +136,7 @@ namespace SqlCeCmd
                     //    case "varbinary":
                     //        return DbType.Binary;
 
+                    //TODO parse
 
                     switch (columnList[fields[i]].DataType)
                     {
@@ -144,7 +145,6 @@ namespace SqlCeCmd
                             break;
 
                         case "binary":
-                            //TODO parse
                             break;
 
                         case "bit":
