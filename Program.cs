@@ -77,9 +77,9 @@ namespace SqlCeCmd
                     HelpText = "Output SELECTs as XML")]
             public bool MakeXML = false;
 
-            [Option("f", null,
-                    HelpText = "Use batch inserts (fast)")]
-            public bool UseBatch = false;
+            //[Option("f", null,
+            //        HelpText = "Use batch inserts (fast)")]
+            //public bool UseBatch = false;
 
             #endregion
 

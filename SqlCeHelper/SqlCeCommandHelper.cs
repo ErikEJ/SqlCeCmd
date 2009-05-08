@@ -81,10 +81,10 @@ namespace SqlCeCmd
                 {
                     this.xmlOutput = true;
                 }
-                if (options.UseBatch)
-                {
-                    this.useBatchInsert = true;
-                }
+                //if (options.UseBatch)
+                //{
+                //    this.useBatchInsert = true;
+                //}
                 CommandExecute execute = FindExecuteType(options.QueryText);
                 int rows = 0;
                 if (execute != CommandExecute.Undefined)
@@ -344,7 +344,6 @@ namespace SqlCeCmd
 
         private int RunBatchInsert(SqlCeCommand cmd, SqlCeConnection conn)
         {
-            //TODO InsertParser
             if (insertParser != null && insertParser.TableName != currentTable)
             {
                 ////Do the actual inserts now ("batching")
