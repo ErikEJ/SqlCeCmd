@@ -13,7 +13,6 @@ namespace SqlCeCmd
         private bool writeHeaders = true;
         private int headerInterval = Int32.MaxValue;
         private bool xmlOutput = false;
-        private bool useBatchInsert = false;
         private string currentTable = string.Empty;
         private SqlCeUpdatableRecord rec;
         private SqlCeResultSet rs;
@@ -44,9 +43,21 @@ namespace SqlCeCmd
                     string line = sr.ReadLine();
                     if (line.Equals("GO", StringComparison.InvariantCultureIgnoreCase))
                     {
-                        Console.WriteLine("Executing: " + Environment.NewLine + sb.ToString());
+                        Console.WriteLine("Executing: " + sb.ToString());
                         options.QueryText = sb.ToString();
-                        RunCommand(options);
+                        if (InsertParser.CheckTableName(options.QueryText) != null && options.UseBatch)
+                        {
+                            RunCommand(options, true);
+                        }
+                        else
+                        {
+                            if (options.UseBatch && insertParser != null && insertParser.Rows.Count > 0)
+                            {
+                                RunCommand(options, true);
+                            }
+                            RunCommand(options);
+                        }
+                       
                         sb.Remove(0, sb.Length);
                     }
                     else
@@ -62,6 +73,11 @@ namespace SqlCeCmd
         }
 
         internal void RunCommand(SqlCeCmd.Program.Options options)
+        {
+            RunCommand(options, false);
+        }
+
+        internal void RunCommand(SqlCeCmd.Program.Options options, bool batch)
         {
             using (SqlCeCommand cmd = new SqlCeCommand(options.QueryText))
             {
@@ -81,55 +97,47 @@ namespace SqlCeCmd
                 {
                     this.xmlOutput = true;
                 }
-                //if (options.UseBatch)
-                //{
-                //    this.useBatchInsert = true;
-                //}
-                CommandExecute execute = FindExecuteType(options.QueryText);
                 int rows = 0;
-                if (execute != CommandExecute.Undefined)
+                if (batch)
                 {
-                    if (execute == CommandExecute.DataReader)
+                    rows = RunBatchInsert(cmd, conn);                    
+                }
+                else
+                {
+                    CommandExecute execute = FindExecuteType(options.QueryText);
+                    
+                    if (execute != CommandExecute.Undefined)
                     {
-                        if (this.xmlOutput)
+
+                        if (execute == CommandExecute.DataReader)
                         {
-                            rows = RunDataTable(cmd, conn);
+                            if (this.xmlOutput)
+                            {
+                                rows = RunDataTable(cmd, conn);
+                            }
+                            else
+                            {
+                                rows = RunDataReader(cmd, conn, options.ColumnSeparator, options.RemoveSpaces);
+                                Console.WriteLine();
+                                Console.WriteLine(string.Format("({0} rows affected)", rows.ToString(cultureInfo)));
+                            }
                         }
-                        else
+                        if (execute == CommandExecute.NonQuery)
                         {
-                            rows = RunDataReader(cmd, conn, options.ColumnSeparator, options.RemoveSpaces);
-                            Console.WriteLine();
-                            Console.WriteLine(string.Format("({0} rows affected)", rows.ToString(cultureInfo)));
-                        }
-                    }
-                    if (execute == CommandExecute.NonQuery)
-                    {
-                        rows = RunNonQuery(cmd, conn);
-                        Console.WriteLine();
-                        Console.WriteLine(string.Format("({0} rows affected)", rows.ToString(cultureInfo)));
-                    }
-                    if (execute == CommandExecute.Insert)
-                    {
-                        if (useBatchInsert)
-                        {
-                            rows = RunBatchInsert(cmd, conn);
-                        }
-                        else
-                        {
+
                             rows = RunNonQuery(cmd, conn);
                             Console.WriteLine();
                             Console.WriteLine(string.Format("({0} rows affected)", rows.ToString(cultureInfo)));
                         }
+                        if (execute == CommandExecute.Insert)
+                        {
+                            rows = RunNonQuery(cmd, conn);
+                        }
                     }
-                    if (useBatchInsert)
+                    else
                     {
-                        currentTable = Guid.NewGuid().ToString();
-                        RunBatchInsert(cmd, conn);
+                        Console.WriteLine("Invalid command text");
                     }
-                }
-                else
-                {
-                    Console.WriteLine("Invalid command text");
                 }
             }
         }
@@ -344,28 +352,46 @@ namespace SqlCeCmd
 
         private int RunBatchInsert(SqlCeCommand cmd, SqlCeConnection conn)
         {
+            currentTable = InsertParser.CheckTableName(cmd.CommandText);
+            string oldCmd = cmd.CommandText;
             if (insertParser != null && insertParser.TableName != currentTable)
             {
                 ////Do the actual inserts now ("batching")
+                cmd.Connection = conn;
                 cmd.CommandText = insertParser.TableName;
                 cmd.CommandType = System.Data.CommandType.TableDirect;
-                rs = cmd.ExecuteResultSet(ResultSetOptions.Updatable);
-                rec = rs.CreateRecord();                
-
-                columns.Clear();
-                foreach (List<KeyValuePair<string, object>> row in insertParser.Rows)                
+                using (rs = cmd.ExecuteResultSet(ResultSetOptions.Updatable))
                 {
-                    foreach (KeyValuePair<string, object> pair in row)
+                    rec = rs.CreateRecord();
+                    foreach (List<KeyValuePair<int, object>> row in insertParser.Rows)
                     {
-                        if (pair.Value != null)
+                        foreach (KeyValuePair<int, object> pair in row)
                         {
-                            rs.SetValue(GetOrdinal(pair.Key, rs), pair.Value);
+                            if (pair.Value != null)
+                            {
+                                try
+                                {
+                                    rec.SetValue(pair.Key, pair.Value);
+                                }
+                                catch (Exception ex)
+                                {
+                                    throw new InvalidOperationException(String.Format("Batch insert error with key: {0} - value {1} - Error: {2} ", pair.Key, pair.Value.ToString(), ex.ToString()));
+                                }
+                            }
                         }
+                        rs.Insert(rec);
                     }
                 }
-                insertParser = null;
                 Console.WriteLine();
                 Console.WriteLine(string.Format("({0} rows affected)", insertParser.Rows.Count.ToString(cultureInfo)));
+                insertParser = null;
+                if (currentTable != null)
+                {
+                    insertParser = new InsertParser(conn);
+                    cmd.CommandType = System.Data.CommandType.Text;
+                    cmd.CommandText = oldCmd;
+                    insertParser.AddRow(cmd.CommandText);
+                }
             }
             else
             {
@@ -377,23 +403,6 @@ namespace SqlCeCmd
             }
             return 0;
         }
-
-        Dictionary<string, int> columns = new Dictionary<string, int>();
-
-        protected int GetOrdinal(string column, SqlCeResultSet rs)
-        {
-            if (columns.ContainsKey(column))
-            {
-                return columns[column];
-            }
-            else
-            {
-                int ordinal = rs.GetOrdinal(column);
-                columns[column] = ordinal;
-                return ordinal;
-            }
-        }
-
 
         private int RunNonQuery(SqlCeCommand cmd, SqlCeConnection conn)
         {
@@ -429,32 +438,35 @@ namespace SqlCeCmd
             using (SqlCeCommand cmdSize = new SqlCeCommand(commandText))
             {
                 cmdSize.Connection = conn;
-                SqlCeDataReader rdr = cmdSize.ExecuteReader(System.Data.CommandBehavior.SchemaOnly | System.Data.CommandBehavior.KeyInfo);
-                System.Data.DataTable schemaTable = rdr.GetSchemaTable();
-                System.Data.DataView schemaView = new System.Data.DataView(schemaTable);
-                schemaView.RowFilter = string.Format("ColumnName = '{0}'", fieldName);
-                if (schemaView.Count > 0)
+                using (SqlCeDataReader rdr = cmdSize.ExecuteReader(System.Data.CommandBehavior.SchemaOnly | System.Data.CommandBehavior.KeyInfo))
                 {
-                    string colName = schemaView[0].Row["BaseColumnName"].ToString();
-                    string tabName = schemaView[0].Row["BaseTableName"].ToString();
-                    using (SqlCeCommand cmd = new SqlCeCommand(string.Format("SELECT CHARACTER_MAXIMUM_LENGTH FROM INFORMATION_SCHEMA.COLUMNS WHERE COLUMN_NAME = '{0}' AND TABLE_NAME = '{1}'", colName, tabName)))
+                    System.Data.DataTable schemaTable = rdr.GetSchemaTable();
+                    System.Data.DataView schemaView = new System.Data.DataView(schemaTable);
+                    schemaView.RowFilter = string.Format("ColumnName = '{0}'", fieldName);
+                    if (schemaView.Count > 0)
                     {
-                        cmd.Connection = conn;
-                        Object val = cmd.ExecuteScalar();
-                        if (val != null)
+                        string colName = schemaView[0].Row["BaseColumnName"].ToString();
+                        string tabName = schemaView[0].Row["BaseTableName"].ToString();
+                        using (SqlCeCommand cmd = new SqlCeCommand(string.Format("SELECT CHARACTER_MAXIMUM_LENGTH FROM INFORMATION_SCHEMA.COLUMNS WHERE COLUMN_NAME = '{0}' AND TABLE_NAME = '{1}'", colName, tabName)))
                         {
-                            if ((int)val < maxWidth)
+                            cmd.Connection = conn;
+                            Object val = cmd.ExecuteScalar();
+                            if (val != null)
                             {
-                                return (int)val;
-                            }
-                            else
-                            {
-                                return maxWidth;
+                                if ((int)val < maxWidth)
+                                {
+                                    return (int)val;
+                                }
+                                else
+                                {
+                                    return maxWidth;
+                                }
                             }
                         }
                     }
                 }
             }
+
             return -1;            
         }
 

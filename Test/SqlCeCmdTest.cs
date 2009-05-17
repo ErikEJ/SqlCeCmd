@@ -79,10 +79,45 @@ namespace SqlCeCmd.Tests
         [Test]
         public void ExerciseParser()
         {
-            System.Data.SqlServerCe.SqlCeConnection conn = new System.Data.SqlServerCe.SqlCeConnection(@"data source=C:\Data\SQLCE\ExportSqlCETest\MunroSoft.PatchSpy.sdf");
-            conn.Open();
-            InsertParser parser = new InsertParser(conn);
-            parser.AddRow("");
+            string file = @"C:\test.sdf";
+            if (System.IO.File.Exists(file))
+            {
+                System.IO.File.Delete(file);
+            }
+            SqlCeEngineHelper testEngine = new SqlCeEngineHelper(string.Format("Data Source={0};", file));
+            testEngine.Execute(SqlCeEngineHelper.EngineAction.Create);
+            Assert.IsTrue(System.IO.File.Exists(file), "Create OK");
+
+            SqlCeCommandHelper cmdHelper = new SqlCeCommandHelper(string.Format("Data Source={0};", file));
+            Program.Options options = new Program.Options();
+            
+            options.UseBatch = false;
+            options.QueryFile = @"C:\Data\SQLCE\SqlCeCmdTest\northwind.sql";
+            System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
+            sw.Start();
+            cmdHelper.RunCommands(options, true);
+            System.Diagnostics.Debug.Write("Time to run: " + sw.ElapsedMilliseconds.ToString());
+            sw.Stop();
+            cmdHelper.Dispose();
+
+            //if (System.IO.File.Exists(file))
+            //{
+            //    System.IO.File.Delete(file);
+            //}
+            //SqlCeEngineHelper testEngine2 = new SqlCeEngineHelper(string.Format("Data Source={0};", file));
+            //testEngine.Execute(SqlCeEngineHelper.EngineAction.Create);
+            //Assert.IsTrue(System.IO.File.Exists(file), "Create OK");
+
+            //SqlCeCommandHelper cmdHelper2 = new SqlCeCommandHelper(string.Format("Data Source={0};", file));
+            //Program.Options options2 = new Program.Options();
+
+            //options.UseBatch = false;
+            //options.QueryFile = @"C:\Data\SQLCE\SqlCeCmdTest\nworders.sql";
+            //sw.Start();
+            //cmdHelper2.RunCommands(options, true);
+            //System.Diagnostics.Debug.Write("QA: " + sw.ElapsedMilliseconds.ToString());
+            //sw.Stop();
+            //cmdHelper2.Dispose();
         }
 
         //[Test]

@@ -3,7 +3,7 @@
     <ProjectView>ProjectFiles</ProjectView>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <StartArguments>-d "Test" -e shrink -q</StartArguments>
+    <StartArguments>-d "Data Source=C:\test.sdf" -e compact</StartArguments>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugTest|AnyCPU' ">
     <StartArguments>-d "Data Source=C:\test.sdf;Case Sensitive=True;Password=p" -z "Data Source=;Encryption Mode=ppc2003 compatibility;Case Sensitive=false;Password=new"</StartArguments>
