@@ -20,5 +20,6 @@ namespace SqlCeCmd
         public string ColumnDefault { get; set; }
         public bool RowGuidCol { get; set; }
         public string TableName { get; set; }
+        public int Ordinal { get; set; }
     }
 }
