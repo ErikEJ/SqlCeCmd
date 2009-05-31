@@ -88,7 +88,7 @@ namespace SqlCeCmd
                 {
                     string sql = "SELECT     Column_name, is_nullable, data_type, character_maximum_length, numeric_precision, autoinc_increment, autoinc_seed, column_hasdefault, column_default, column_flags, numeric_scale, table_name, ordinal_position  " +
                     " FROM         information_schema.columns " +
-                    " WHERE      (column_name NOT LIKE '__sys%') " +
+                    " WHERE      (SUBSTRING(COLUMN_NAME, 1,5) <> '__sys')  " +
                     " AND TABLE_NAME = '" + this.TableName + "'" +
                     " ORDER BY ordinal_position ASC ";
                     using (System.Data.SqlServerCe.SqlCeCommand cmd = new System.Data.SqlServerCe.SqlCeCommand(sql))
