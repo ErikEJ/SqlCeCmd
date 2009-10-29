@@ -110,7 +110,7 @@ namespace SqlCeCmd
                                     AutoIncrementSeed = (dr.IsDBNull(6) ? 0 : Convert.ToInt64(dr[6], System.Globalization.CultureInfo.InvariantCulture)),
                                     ColumnHasDefault = (dr.IsDBNull(7) ? false : dr.GetBoolean(7)),
                                     ColumnDefault = (dr.IsDBNull(8) ? string.Empty : dr.GetString(8).Trim()),
-                                    RowGuidCol = (dr.IsDBNull(9) ? false : dr.GetInt32(9) == 378),
+                                    RowGuidCol = (dr.IsDBNull(9) ? false : dr.GetInt32(9) == 378 || dr.GetInt32(9) == 282),
                                     NumericScale = (dr.IsDBNull(10) ? 0 : Convert.ToInt32(dr[10], System.Globalization.CultureInfo.InvariantCulture)),
                                     TableName = dr.GetString(11),
                                     Ordinal = (dr.IsDBNull(12) ? 0 : dr.GetInt32(12))
