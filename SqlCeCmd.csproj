@@ -80,7 +80,6 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SqlCeHelper\Column.cs" />
-    <Compile Include="SqlCeHelper\InsertParser.cs" />
     <Compile Include="SqlCeHelper\SqlCeCommandHelper.cs" />
     <Compile Include="SqlCeHelper\SqlCeEngineHelper.cs" />
     <Compile Include="SqlCeHelper\SqlCeUtility.cs" />

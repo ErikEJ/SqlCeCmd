@@ -77,10 +77,6 @@ namespace SqlCeCmd
                     HelpText = "Output SELECTs as XML")]
             public bool MakeXML = false;
 
-            [Option("f", null,
-                    HelpText = "Use batch inserts (experimental)")]
-            public bool UseBatch = false;
-
             #endregion
 
             #region Specialized Option Attribute
@@ -184,7 +180,7 @@ namespace SqlCeCmd
                             }
                             else
                             {
-                                Console.WriteLine("Connection string woth new options required");
+                                Console.WriteLine("Connection string with new options required");
                             }
                             break;
                         case Action.RunEngineCommand:
