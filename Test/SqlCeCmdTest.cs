@@ -91,7 +91,6 @@ namespace SqlCeCmd.Tests
             SqlCeCommandHelper cmdHelper = new SqlCeCommandHelper(string.Format("Data Source={0};", file));
             Program.Options options = new Program.Options();
             
-            options.UseBatch = false;
             options.QueryFile = @"C:\Data\SQLCE\SqlCeCmdTest\northwind.sql";
             System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
             sw.Start();
