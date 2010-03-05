@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Data.SqlServerCe;
+using System.IO;
+using System.Text;
+using System.Text.RegularExpressions;
 
 namespace SqlCeCmd
 {
@@ -66,8 +68,26 @@ namespace SqlCeCmd
 
         internal void RunCommand(SqlCeCmd.Program.Options options)
         {
-            using (SqlCeCommand cmd = new SqlCeCommand(options.QueryText))
+            using (SqlCeCommand cmd = new SqlCeCommand())
             {
+                int n = 0;
+                cmd.CommandText = Regex.Replace(options.QueryText, @"SqlCeCmd_LoadImage\((\w+\.\w+)\)", delegate(Match m)
+                {
+                    string id = m.Groups[1].Value;
+                    string paramName = string.Format("@SqlCeCmd_IMAGE_{0}", n++);
+                    string fileName = Path.Combine(Path.GetDirectoryName(options.QueryFile), id);
+
+                    using (BinaryReader br = new BinaryReader(File.Open(fileName, FileMode.Open)))
+                    {
+                        byte[] data = br.ReadBytes((int)br.BaseStream.Length);
+                        SqlCeParameter parameter = new SqlCeParameter(paramName, System.Data.SqlDbType.Image, data.Length);
+                        parameter.Value = data;
+                        cmd.Parameters.Add(parameter);
+                    }
+
+                    return paramName;
+                });
+
                 if (options.UseCurrentCulture)
                 {
                     this.cultureInfo = System.Globalization.CultureInfo.CurrentCulture;

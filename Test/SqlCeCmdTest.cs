@@ -61,7 +61,7 @@ namespace SqlCeCmd.Tests
         [Test]
         public void ExerciseFileInput()
         {
-            string file = @"C:\test.sdf";
+            string file = @"C:\data\test.sdf";
             if (System.IO.File.Exists(file))
             {
                 System.IO.File.Delete(file);
@@ -72,7 +72,7 @@ namespace SqlCeCmd.Tests
 
             SqlCeCommandHelper cmdHelper = new SqlCeCommandHelper(string.Format("Data Source={0};", file));
             Program.Options options = new Program.Options();
-            options.QueryFile = @"C:\Data\SQLCE\ExportSqlCETest\nwind.sql";
+            options.QueryFile = @"C:\Data\SQLCE\Test\ExportSqlCETest\AWsalesImg_0.sql";
             cmdHelper.RunCommands(options, true);
         }
 
@@ -118,13 +118,6 @@ namespace SqlCeCmd.Tests
             //sw.Stop();
             //cmdHelper2.Dispose();
         }
-
-        //[Test]
-        //[ExpectedException(typeof(ArgumentNullException))]
-        //public void WillThrowExceptionIfArgumentsArrayIsNull()
-        //{
-        //    parser.ParseArguments(null, new MockOptions());
-        //}
 
     }
 }
