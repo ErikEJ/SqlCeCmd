@@ -145,6 +145,7 @@ namespace SqlCeCmd
                         {
                             Console.WriteLine(string.Format("Cannot open {0} for writing", options.OutputFile));
                             Console.WriteLine(e.Message);
+                            Environment.Exit(1);
                             return;
                         }
                         Console.SetOut(writer);
@@ -208,12 +209,13 @@ namespace SqlCeCmd
             {
                 Console.SetOut (oldOut);
                 SqlCeUtility.ShowErrors(e);
+                Environment.Exit(1);
             }
             catch (Exception ex)
             {
                 Console.SetOut (oldOut);
-            
                 Console.WriteLine("Error: " + ex.ToString());
+                Environment.Exit(1);
             }
 
         }
