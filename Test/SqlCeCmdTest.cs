@@ -72,7 +72,7 @@ namespace SqlCeCmd.Tests
 
             SqlCeCommandHelper cmdHelper = new SqlCeCommandHelper(string.Format("Data Source={0};", file));
             Program.Options options = new Program.Options();
-            options.QueryFile = @"C:\Data\SQLCE\Test\ExportSqlCETest\AWsalesImg_0.sql";
+            options.QueryFile = @"C:\Data\SQLCE\Test\ExportSqlCETest\northwind.sql";
             cmdHelper.RunCommands(options, true);
         }
 
