@@ -4,6 +4,7 @@ using System.Data.SqlServerCe;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Globalization;
 
 namespace SqlCeCmd
 {
@@ -20,8 +21,7 @@ namespace SqlCeCmd
         private System.Globalization.CultureInfo cultureInfo = System.Globalization.CultureInfo.InvariantCulture;
         private bool writeHeaders = true;
         private int headerInterval = Int32.MaxValue;
-        private bool xmlOutput = false;
-        private string currentTable = string.Empty;
+        private bool xmlOutput;
 
         private enum CommandExecute
         {
@@ -37,7 +37,7 @@ namespace SqlCeCmd
             this.conn.Open();
         }
 
-        internal void RunCommands(SqlCeCmd.Program.Options options, bool useFile)
+        internal void RunCommands(SqlCeCmd.Program.Options options)
         {
             using (System.IO.StreamReader sr = System.IO.File.OpenText(options.QueryFile))
             {
@@ -46,7 +46,7 @@ namespace SqlCeCmd
                 while (!sr.EndOfStream)
                 {
                     string line = sr.ReadLine();
-                    if (line.Equals("GO", StringComparison.InvariantCultureIgnoreCase))
+                    if (line.Equals("GO", StringComparison.OrdinalIgnoreCase))
                     {
                         Console.WriteLine("Executing: " + sb.ToString());
                         options.QueryText = sb.ToString();
@@ -71,7 +71,7 @@ namespace SqlCeCmd
                 cmd.CommandText = Regex.Replace(options.QueryText, @"SqlCeCmd_LoadImage\((\w+\.\w+)\)", delegate(Match m)
                 {
                     string id = m.Groups[1].Value;
-                    string paramName = string.Format("@SqlCeCmd_IMAGE_{0}", n++);
+                    string paramName = string.Format(CultureInfo.InvariantCulture, "@SqlCeCmd_IMAGE_{0}", n++);
                     string fileName = Path.Combine(Path.GetDirectoryName(options.QueryFile), id);
 
                     using (BinaryReader br = new BinaryReader(File.Open(fileName, FileMode.Open)))
@@ -117,7 +117,7 @@ namespace SqlCeCmd
                         {
                             rows = RunDataReader(cmd, conn, options.ColumnSeparator, options.RemoveSpaces);
                             Console.WriteLine();
-                            Console.WriteLine(string.Format("({0} rows affected)", rows.ToString(cultureInfo)));
+                            Console.WriteLine(string.Format(CultureInfo.InvariantCulture, "({0} rows affected)", rows.ToString(cultureInfo)));
                         }
                     }
                     if (execute == CommandExecute.NonQuery)
@@ -125,7 +125,7 @@ namespace SqlCeCmd
 
                         rows = RunNonQuery(cmd, conn);
                         Console.WriteLine();
-                        Console.WriteLine(string.Format("({0} rows affected)", rows.ToString(cultureInfo)));
+                        Console.WriteLine(string.Format(CultureInfo.InvariantCulture, "({0} rows affected)", rows.ToString(cultureInfo)));
                     }
                     if (execute == CommandExecute.Insert)
                     {
@@ -139,23 +139,118 @@ namespace SqlCeCmd
             }
         }
 
-        private int RunDataTable(SqlCeCommand cmd, SqlCeConnection conn)
+        private static int RunDataTable(SqlCeCommand cmd, SqlCeConnection conn)
         {
             cmd.Connection = conn;
             System.Data.DataTable table = new System.Data.DataTable();
+            table.Locale = CultureInfo.InvariantCulture;
             table.Load(cmd.ExecuteReader());
             table.WriteXml(Console.Out, System.Data.XmlWriteMode.WriteSchema);
             return table.Rows.Count;
         }
 
-        private int RunDataReader(SqlCeCommand cmd, SqlCeConnection conn, Char colSepChar, bool removeSpaces)
+        private int RunDataReader(SqlCeCommand cmd, SqlCeConnection connection, Char colSepChar, bool removeSpaces)
         {
-            cmd.Connection = conn;
+            cmd.Connection = connection;
             SqlCeDataReader rdr = cmd.ExecuteReader();
             int rows = 0;
             int maxWidth = 256;
             string colSep = colSepChar.ToString();
             List<Column> headings = new List<Column>();
+            CreateHeadings(cmd, conn, rdr, maxWidth, headings);
+            while (rdr.Read())
+            {
+                bool doWrite = (rows == 0 && writeHeaders);
+                if (!doWrite && rows > 0)
+                    doWrite = ((rows % headerInterval) == 0);
+
+                if (doWrite)
+                {
+                    for (int x = 0; x < rdr.FieldCount; x++)
+                    {
+                        if (removeSpaces)
+                        {
+                            Console.Write(headings[x].Name);
+                        }
+                        else
+                        {
+                            Console.Write(headings[x].Name.PadRight(headings[x].Width));
+                        }
+                        Console.Write(colSep);
+                    }
+                    Console.WriteLine();
+                    for (int x = 0; x < rdr.FieldCount; x++)
+                    {
+                        System.Text.StringBuilder sb = new System.Text.StringBuilder();
+                        if (removeSpaces)
+                        {
+                            sb.Append('-', headings[x].Name.Length);
+                        }
+                        else
+                        {
+                            sb.Append('-', headings[x].Width);
+                        }
+                        Console.Write(sb.ToString());
+                        Console.Write(colSep);
+                    }
+                    Console.WriteLine();
+                }
+                for (int i = 0; i < rdr.FieldCount; i++)
+                {                   
+                    if (!rdr.IsDBNull(i))
+                    {
+                        string value = string.Empty;
+                        string fieldType = rdr.GetDataTypeName(i);
+                        if (fieldType == "Image" || fieldType == "VarBinary" || fieldType == "Binary" || fieldType == "RowVersion")
+                        {
+                            Byte[] buffer = (Byte[])rdr[i];
+                            StringBuilder sb = new StringBuilder();
+                            sb.Append("0x");
+                            for (int y = 0; y < (headings[i].Width -2) / 2; y++)
+                            {
+                                sb.Append(buffer[y].ToString("X2", CultureInfo.InvariantCulture));
+                            }
+                            value = sb.ToString();
+                        }
+                        else
+                        {
+                            value = Convert.ToString(rdr[i], cultureInfo);
+                        }
+
+                        if (removeSpaces)
+                        {
+                            Console.Write(value);
+                        }
+                        else if (headings[i].PadLeft)
+                        {
+                            Console.Write(value.PadLeft(headings[i].Width));
+                        }
+                        else 
+                        {
+                            Console.Write(value.PadRight(headings[i].Width));
+                        }
+                    }
+                    else
+                    {
+                        if (removeSpaces)
+                        {
+                            Console.Write("NULL");
+                        }
+                        else
+                        {
+                            Console.Write("NULL".PadRight(headings[i].Width));
+                        }
+                    }
+                    Console.Write(colSep);
+                }                
+                rows++;
+                Console.WriteLine();
+            }            
+            return rows;
+        }
+
+        private static void CreateHeadings(SqlCeCommand cmd, SqlCeConnection conn, SqlCeDataReader rdr, int maxWidth, List<Column> headings)
+        {
             for (int i = 0; i < rdr.FieldCount; i++)
             {
                 // 18 different types
@@ -194,7 +289,7 @@ namespace SqlCeCmd
 
                     case "Int":
                         width = Math.Max(11, rdr.GetName(i).Length);
-                        headings.Add(new Column{ Name = rdr.GetName(i), Width = width, PadLeft = true} );
+                        headings.Add(new Column { Name = rdr.GetName(i), Width = width, PadLeft = true });
                         break;
 
                     case "Money":
@@ -254,106 +349,17 @@ namespace SqlCeCmd
 
                     default:
                         break;
-                }                
-            }
-            while (rdr.Read())
-            {
-                bool doWrite = (rows == 0 && writeHeaders);
-                if (!doWrite && rows > 0)
-                    doWrite = ((rows % headerInterval) == 0);
-
-                if (doWrite)
-                {
-                    for (int x = 0; x < rdr.FieldCount; x++)
-                    {
-                        if (removeSpaces)
-                        {
-                            Console.Write(headings[x].Name);
-                        }
-                        else
-                        {
-                            Console.Write(headings[x].Name.PadRight(headings[x].Width));
-                        }
-                        Console.Write(colSep);
-                    }
-                    Console.WriteLine();
-                    for (int x = 0; x < rdr.FieldCount; x++)
-                    {
-                        System.Text.StringBuilder sb = new System.Text.StringBuilder();
-                        if (removeSpaces)
-                        {
-                            sb.Append('-', headings[x].Name.Length);
-                        }
-                        else
-                        {
-                            sb.Append('-', headings[x].Width);
-                        }
-                        Console.Write(sb.ToString());
-                        Console.Write(colSep);
-                    }
-                    Console.WriteLine();
                 }
-                for (int i = 0; i < rdr.FieldCount; i++)
-                {                   
-                    if (!rdr.IsDBNull(i))
-                    {
-                        string value = string.Empty;
-                        string fieldType = rdr.GetDataTypeName(i);
-                        if (fieldType == "Image" || fieldType == "VarBinary" || fieldType == "Binary" || fieldType == "RowVersion")
-                        {
-                            Byte[] buffer = (Byte[])rdr[i];
-                            StringBuilder sb = new StringBuilder();
-                            sb.Append("0x");
-                            for (int y = 0; y < (headings[i].Width -2) / 2; y++)
-                            {
-                                sb.Append(buffer[y].ToString("X2"));
-                            }
-                            value = sb.ToString();
-                        }
-                        else
-                        {
-                            value = Convert.ToString(rdr[i], cultureInfo);
-                        }
-
-                        if (removeSpaces)
-                        {
-                            Console.Write(value);
-                        }
-                        else if (headings[i].PadLeft)
-                        {
-                            Console.Write(value.PadLeft(headings[i].Width));
-                        }
-                        else 
-                        {
-                            Console.Write(value.PadRight(headings[i].Width));
-                        }
-                    }
-                    else
-                    {
-                        if (removeSpaces)
-                        {
-                            Console.Write("NULL");
-                        }
-                        else
-                        {
-                            Console.Write("NULL".PadRight(headings[i].Width));
-                        }
-                    }
-                    Console.Write(colSep);
-                }                
-                rows++;
-                Console.WriteLine();
-            }            
-            return rows;
+            }
         }
 
-        private int RunNonQuery(SqlCeCommand cmd, SqlCeConnection conn)
+        private static int RunNonQuery(SqlCeCommand cmd, SqlCeConnection connection)
         {
-            cmd.Connection = conn;
+            cmd.Connection = connection;
             return cmd.ExecuteNonQuery();
         }
 
-        private CommandExecute FindExecuteType(string commandText)
+        private static CommandExecute FindExecuteType(string commandText)
         {
             if (string.IsNullOrEmpty(commandText))
             {
@@ -362,11 +368,11 @@ namespace SqlCeCmd
             
             string test = commandText.Trim();
 
-            if (test.ToLowerInvariant().StartsWith("select "))
+            if (test.ToUpperInvariant().StartsWith("SELECT ", StringComparison.Ordinal))
             {
                 return CommandExecute.DataReader;
             }
-            if (test.ToLowerInvariant().StartsWith("insert "))
+            if (test.ToUpperInvariant().StartsWith("INSERT ", StringComparison.Ordinal))
             {
                 return CommandExecute.Insert;
             }
@@ -376,7 +382,7 @@ namespace SqlCeCmd
             }
         }
 
-        private int GetFieldSize(SqlCeConnection conn, string fieldName, int maxWidth, string commandText)
+        private static int GetFieldSize(SqlCeConnection conn, string fieldName, int maxWidth, string commandText)
         { 
             using (SqlCeCommand cmdSize = new SqlCeCommand(commandText))
             {
@@ -385,12 +391,12 @@ namespace SqlCeCmd
                 {
                     System.Data.DataTable schemaTable = rdr.GetSchemaTable();
                     System.Data.DataView schemaView = new System.Data.DataView(schemaTable);
-                    schemaView.RowFilter = string.Format("ColumnName = '{0}'", fieldName);
+                    schemaView.RowFilter = string.Format(CultureInfo.InvariantCulture, "ColumnName = '{0}'", fieldName);
                     if (schemaView.Count > 0)
                     {
                         string colName = schemaView[0].Row["BaseColumnName"].ToString();
                         string tabName = schemaView[0].Row["BaseTableName"].ToString();
-                        using (SqlCeCommand cmd = new SqlCeCommand(string.Format("SELECT CHARACTER_MAXIMUM_LENGTH FROM INFORMATION_SCHEMA.COLUMNS WHERE COLUMN_NAME = '{0}' AND TABLE_NAME = '{1}'", colName, tabName)))
+                        using (SqlCeCommand cmd = new SqlCeCommand(string.Format(CultureInfo.InvariantCulture, "SELECT CHARACTER_MAXIMUM_LENGTH FROM INFORMATION_SCHEMA.COLUMNS WHERE COLUMN_NAME = '{0}' AND TABLE_NAME = '{1}'", colName, tabName)))
                         {
                             cmd.Connection = conn;
                             Object val = cmd.ExecuteScalar();

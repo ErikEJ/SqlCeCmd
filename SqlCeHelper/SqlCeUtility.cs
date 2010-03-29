@@ -21,7 +21,7 @@ namespace SqlCeCmd
             // Enumerate the errors to a message box.
             foreach (System.Data.SqlServerCe.SqlCeError err in errorCollection)
             {
-                bld.Append("\n Error Code: " + err.HResult.ToString("X"));
+                bld.Append("\n Error Code: " + err.HResult.ToString("X", System.Globalization.CultureInfo.InvariantCulture));
                 bld.Append("\n Message   : " + err.Message);
                 bld.Append("\n Minor Err.: " + err.NativeError);
                 bld.Append("\n Source    : " + err.Source);
@@ -35,7 +35,7 @@ namespace SqlCeCmd
                 // Enumerate each string parameter for the error.
                 foreach (string errPar in err.ErrorParameters)
                 {
-                    if (String.Empty != errPar) bld.Append("\n Err. Par. : " + errPar);
+                    if (!string.IsNullOrEmpty(errPar)) bld.Append("\n Err. Par. : " + errPar);
                 }
 
                 Console.WriteLine(bld.ToString());

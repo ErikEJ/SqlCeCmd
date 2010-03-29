@@ -4,6 +4,7 @@ using System.Text;
 using CommandLine;
 using CommandLine.Text;
 using System.IO;
+using System.Globalization;
 
 namespace SqlCeCmd
 {
@@ -67,7 +68,7 @@ namespace SqlCeCmd
 
             [Option("s", null,
                      HelpText = "Column separator")]
-            public Char ColumnSeparator = Convert.ToChar(" ");
+            public Char ColumnSeparator = Convert.ToChar(" ", CultureInfo.InvariantCulture);
 
             [Option("W", null,
                     HelpText = "Remove trailing spaces")]
@@ -143,7 +144,7 @@ namespace SqlCeCmd
                         }
                         catch (Exception e)
                         {
-                            Console.WriteLine(string.Format("Cannot open {0} for writing", options.OutputFile));
+                            Console.WriteLine(string.Format(CultureInfo.InvariantCulture, "Cannot open {0} for writing", options.OutputFile));
                             Console.WriteLine(e.Message);
                             Environment.Exit(1);
                             return;
@@ -154,7 +155,6 @@ namespace SqlCeCmd
                     {
                         SqlCeEngineHelper engine = new SqlCeEngineHelper(options.ConnectionString);
                         engine.Execute(SqlCeEngineHelper.EngineAction.GetInfo, null);
-                        engine.CreateInfo();
                     }
                     switch (action)
                     {
@@ -169,7 +169,7 @@ namespace SqlCeCmd
                         case Action.QueryFromFile:
                             using (SqlCeCommandHelper cmdHelper = new SqlCeCommandHelper(options.ConnectionString))
                             {
-                                cmdHelper.RunCommands(options, true);
+                                cmdHelper.RunCommands(options);
                             }
                             break;
                         case Action.OptionChange:

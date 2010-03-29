@@ -160,7 +160,7 @@ namespace CommandLine
             return !hadError;
         }
 
-        private bool ParseHelp(string[] args, HelpOptionAttribute helpOption)
+        private static bool ParseHelp(string[] args, HelpOptionAttribute helpOption)
         {
             for (int i = 0; i < args.Length; i++)
             {
