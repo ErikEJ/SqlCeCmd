@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Data.SqlServerCe;
+using System.Globalization;
 
 namespace SqlCeCmd
 {
@@ -101,7 +102,7 @@ namespace SqlCeCmd
                     if (System.IO.File.Exists(cn.Database))
                     {
                         System.IO.FileInfo fi = new System.IO.FileInfo(cn.Database);
-                        valueList.Add(new KeyValuePair<string, string>("DatabaseSize", fi.Length.ToString()));
+                        valueList.Add(new KeyValuePair<string, string>("DatabaseSize", fi.Length.ToString(CultureInfo.InvariantCulture)));
                         valueList.Add(new KeyValuePair<string, string>("Created", fi.CreationTime.ToShortDateString() + " " + fi.CreationTime.ToShortTimeString()));
                     }
                     valueList.Add(new KeyValuePair<string, string>(string.Empty, string.Empty));
@@ -109,7 +110,7 @@ namespace SqlCeCmd
 
                     foreach (KeyValuePair<string, string> pair in valueList)
                     {
-                        Console.WriteLine(string.Format("{0}: {1}", pair.Key, pair.Value));
+                        Console.WriteLine(string.Format(CultureInfo.InvariantCulture, "{0}: {1}", pair.Key, pair.Value));
                     }
                     
                 }
@@ -117,9 +118,5 @@ namespace SqlCeCmd
             return;
         }
 
-        internal void CreateInfo()
-        {
-            
-        }
     }
 }
