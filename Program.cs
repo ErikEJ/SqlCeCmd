@@ -27,7 +27,7 @@ namespace SqlCeCmd
             #region Standard Option Attribute
             [Option("d", null,
                     Required = true,
-                    HelpText = "SQL Compact connection string\r\n")]
+                    HelpText = "SQL Compact ADO.NET connection string\r\n")]
             public string ConnectionString = String.Empty;
 
             //The 4 command options
@@ -87,9 +87,12 @@ namespace SqlCeCmd
             public string GetUsage()
             {
                 HelpText help = new HelpText(Program.headingInfo);
-                help.Copyright = new CopyrightInfo("Erik Ejlskov Jensen", 2009);
+                help.Copyright = new CopyrightInfo("Erik Ejlskov Jensen", 2010);
                 help.AddPreOptionsLine("Contact me at my blog: http://erikej.blogspot.com");
                 help.AddPreOptionsLine("Check for updates at: http://sqlcecmd.codeplex.com");
+                help.AddPreOptionsLine("");
+                help.AddPreOptionsLine("Sample usage:");
+                help.AddPreOptionsLine("sqlcecmd -d \"Data Source=C:\\nw.sdf\" -q \"SELECT * FROM Shippers\"");
                 help.AddOptions(this);
                 return help;
             }
