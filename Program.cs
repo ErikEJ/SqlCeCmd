@@ -48,6 +48,9 @@ namespace SqlCeCmd
             public string QueryFile = String.Empty;
 
             //Output options
+            [Option("n", null,
+                    HelpText = "Hide query output\r\n")]
+            public bool HideOutput = false;
 
             [Option("o", null,
                 HelpText = "Output file")]
