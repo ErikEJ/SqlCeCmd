@@ -48,6 +48,7 @@ namespace SqlCeCmd
                     string line = sr.ReadLine().Trim();
                     if (line.Equals("GO", StringComparison.OrdinalIgnoreCase))
                     {
+                        //Patch from vicok:
                         if (!options.HideOutput)
                             Console.WriteLine("Executing: " + sb.ToString());
                         options.QueryText = sb.ToString();
