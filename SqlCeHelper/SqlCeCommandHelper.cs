@@ -45,10 +45,11 @@ namespace SqlCeCmd
                 StringBuilder sb = new StringBuilder(10000);
                 while (!sr.EndOfStream)
                 {
-                    string line = sr.ReadLine();
+                    string line = sr.ReadLine().Trim();
                     if (line.Equals("GO", StringComparison.OrdinalIgnoreCase))
                     {
-                        Console.WriteLine("Executing: " + sb.ToString());
+                        if (!options.HideOutput)
+                            Console.WriteLine("Executing: " + sb.ToString());
                         options.QueryText = sb.ToString();
                         RunCommand(options);
                        
@@ -56,8 +57,11 @@ namespace SqlCeCmd
                     }
                     else
                     {
-                        sb.Append(line);
-                        sb.Append(Environment.NewLine);
+                        if (!line.StartsWith("--"))
+                        {
+                            sb.Append(line);
+                            sb.Append(Environment.NewLine);
+                        }
                     }
                 }
             }
@@ -368,11 +372,11 @@ namespace SqlCeCmd
             
             string test = commandText.Trim();
 
-            if (test.ToUpperInvariant().StartsWith("SELECT ", StringComparison.Ordinal))
+            if (test.ToUpperInvariant().StartsWith("SELECT ", StringComparison.OrdinalIgnoreCase))
             {
                 return CommandExecute.DataReader;
             }
-            if (test.ToUpperInvariant().StartsWith("INSERT ", StringComparison.Ordinal))
+            if (test.ToUpperInvariant().StartsWith("INSERT ", StringComparison.OrdinalIgnoreCase))
             {
                 return CommandExecute.Insert;
             }
