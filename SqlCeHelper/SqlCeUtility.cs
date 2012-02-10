@@ -16,7 +16,7 @@ namespace SqlCeCmd
 
             if (null != inner)
             {
-                Console.WriteLine("Inner Exception: " + inner.ToString());
+                Console.Error.WriteLine("Inner Exception: " + inner.ToString());
             }
             // Enumerate the errors to a message box.
             foreach (System.Data.SqlServerCe.SqlCeError err in errorCollection)
@@ -38,7 +38,7 @@ namespace SqlCeCmd
                     if (!string.IsNullOrEmpty(errPar)) bld.Append("\n Err. Par. : " + errPar);
                 }
 
-                Console.WriteLine(bld.ToString());
+                Console.Error.WriteLine(bld.ToString());
                 bld.Remove(0, bld.Length);
             }
         }

@@ -106,7 +106,6 @@ namespace SqlCeCmd
         {
             FileStream ostrm = null;
             StreamWriter writer = null;
-            TextWriter oldOut = Console.Out;
             try
             {
                 Options options = new Options();
@@ -213,14 +212,12 @@ namespace SqlCeCmd
 
             catch (System.Data.SqlServerCe.SqlCeException e)
             {
-                Console.SetOut (oldOut);
                 SqlCeUtility.ShowErrors(e);
                 Environment.Exit(1);
             }
             catch (Exception ex)
             {
-                Console.SetOut (oldOut);
-                Console.WriteLine("Error: " + ex.ToString());
+                Console.Error.WriteLine("Error: " + ex.ToString());
                 Environment.Exit(1);
             }
 
