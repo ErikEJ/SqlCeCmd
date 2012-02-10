@@ -7,6 +7,7 @@ namespace SqlCeCmd.Tests
     using NUnit.Framework;
     using CommandLine;
     using CommandLine.Text;
+    using System.Data.SqlServerCe;
 
     [TestFixture]
     public sealed partial class SqlCeCmdFixture
@@ -73,7 +74,13 @@ namespace SqlCeCmd.Tests
             SqlCeCommandHelper cmdHelper = new SqlCeCommandHelper(string.Format("Data Source={0};", file));
             Program.Options options = new Program.Options();
             options.QueryFile = @"C:\Data\SQLCE\Test\ExportSqlCETest\northwind.sql";
-            cmdHelper.RunCommands(options, true);
+            
+            cmdHelper.RunCommands(options);
+
+            SqlCeCommand cmd = new SqlCeCommand("SELECT COUNT(*) FROM [Order Details]", new SqlCeConnection(string.Format("Data Source={0};", file)));
+            cmd.Connection.Open();
+            int count = (int)cmd.ExecuteScalar();
+            Assert.AreEqual(count, 2820);
         }
 
         [Test]
@@ -94,7 +101,7 @@ namespace SqlCeCmd.Tests
             options.QueryFile = @"C:\Data\SQLCE\SqlCeCmdTest\northwind.sql";
             System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
             sw.Start();
-            cmdHelper.RunCommands(options, true);
+            cmdHelper.RunCommands(options);
             System.Diagnostics.Debug.Write("Time to run: " + sw.ElapsedMilliseconds.ToString());
             sw.Stop();
             cmdHelper.Dispose();
