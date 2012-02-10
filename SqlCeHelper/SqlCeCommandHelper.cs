@@ -58,11 +58,8 @@ namespace SqlCeCmd
                     }
                     else
                     {
-                        if (!line.StartsWith("--"))
-                        {
-                            sb.Append(line);
-                            sb.Append(Environment.NewLine);
-                        }
+                        sb.Append(line);
+                        sb.Append(Environment.NewLine);
                     }
                 }
             }
