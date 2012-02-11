@@ -60,6 +60,21 @@ namespace SqlCeCmd.Tests
         }
 
         [Test]
+        public void ExerciseCommandWithLoadImage()
+        {
+            SqlCeCommandHelper cmdHelper = new SqlCeCommandHelper(@"Data Source=C:\Data\SQLCE\Test\Northwind.sdf;");
+            Program.Options options = new Program.Options();
+            options.OutputFile = @"C:\out.txt";
+            options.Headers = 4;
+            options.MakeXML = true;
+            options.QueryText = "INSERT INTO [Categories] ([Category ID],[Category Name],[Description],[Picture]) VALUES (1,N'Beverages',N'Soft drinks, coffees, teas, beer, and ale',SqlCeCmd_LoadImage(1fc193b9270e4bda856b9c9a2aecf943.blob));";
+            cmdHelper.RunCommand(options);
+        }
+
+        
+        //
+
+        [Test]
         public void ExerciseFileInput()
         {
             string file = @"C:\data\test.sdf";
