@@ -74,7 +74,9 @@ namespace SqlCeCmd
                 {
                     string id = m.Groups[1].Value;
                     string paramName = string.Format(CultureInfo.InvariantCulture, "@SqlCeCmd_IMAGE_{0}", n++);
-                    string fileName = Path.Combine(Path.GetDirectoryName(options.QueryFile), id);
+                    string fileName = Path.Combine(Directory.GetCurrentDirectory(), id); ;
+                    if (!string.IsNullOrEmpty(options.QueryFile))
+                            fileName = Path.Combine(Path.GetDirectoryName(options.QueryFile), id);
 
                     using (BinaryReader br = new BinaryReader(File.Open(fileName, FileMode.Open)))
                     {
