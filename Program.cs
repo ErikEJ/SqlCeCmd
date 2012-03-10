@@ -121,13 +121,13 @@ namespace SqlCeCmd
 
                     if (actionCount == 0)
                     {
-                        Console.WriteLine("Either -q, -i, -e or -z required");
+                        Console.Error.WriteLine("Either -q, -i, -e or -z required");
                         Environment.Exit(1);                        
                     }
                     // actionCount must be exactly 1
                     if (actionCount > 1)
                     {
-                        Console.WriteLine("Only one of either -q, -i, -e or -z required");
+                        Console.Error.WriteLine("Only one of either -q, -i, -e or -z required");
                         Environment.Exit(1);                                                
                     }
                     if (options.Headers != Int32.MinValue)
@@ -136,7 +136,7 @@ namespace SqlCeCmd
                         {}
                         else
                         {
-                            Console.WriteLine("Headers value must be a value between 0 and 2147483647");
+                            Console.Error.WriteLine("Headers value must be a value between 0 and 2147483647");
                             Environment.Exit(1);                                                
                         }
                     }
@@ -149,8 +149,8 @@ namespace SqlCeCmd
                         }
                         catch (Exception e)
                         {
-                            Console.WriteLine(string.Format(CultureInfo.InvariantCulture, "Cannot open {0} for writing", options.OutputFile));
-                            Console.WriteLine(e.Message);
+                            Console.Error.WriteLine(string.Format(CultureInfo.InvariantCulture, "Cannot open {0} for writing", options.OutputFile));
+                            Console.Error.WriteLine(e.Message);
                             Environment.Exit(1);
                             return;
                         }
@@ -186,7 +186,7 @@ namespace SqlCeCmd
                             }
                             else
                             {
-                                Console.WriteLine("Connection string with new options required");
+                                Console.Error.WriteLine("Connection string with new options required");
                             }
                             break;
                         case Action.RunEngineCommand:

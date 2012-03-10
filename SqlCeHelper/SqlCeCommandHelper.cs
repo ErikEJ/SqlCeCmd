@@ -121,7 +121,8 @@ namespace SqlCeCmd
                         {
                             rows = RunDataReader(cmd, conn, options.ColumnSeparator, options.RemoveSpaces);
                             Console.WriteLine();
-                            Console.WriteLine(string.Format(CultureInfo.InvariantCulture, "({0} rows affected)", rows.ToString(cultureInfo)));
+                            if (!options.HideOutput)
+                                Console.WriteLine(string.Format(CultureInfo.InvariantCulture, "({0} rows affected)", rows.ToString(cultureInfo)));
                         }
                     }
                     if (execute == CommandExecute.NonQuery)
@@ -129,7 +130,8 @@ namespace SqlCeCmd
 
                         rows = RunNonQuery(cmd, conn);
                         Console.WriteLine();
-                        Console.WriteLine(string.Format(CultureInfo.InvariantCulture, "({0} rows affected)", rows.ToString(cultureInfo)));
+                        if (!options.HideOutput)
+                            Console.WriteLine(string.Format(CultureInfo.InvariantCulture, "({0} rows affected)", rows.ToString(cultureInfo)));
                     }
                     if (execute == CommandExecute.Insert)
                     {
@@ -138,7 +140,7 @@ namespace SqlCeCmd
                 }
                 else
                 {
-                    Console.WriteLine("Invalid command text");
+                    Console.Error.WriteLine("Invalid command text");
                 }
             }
         }
