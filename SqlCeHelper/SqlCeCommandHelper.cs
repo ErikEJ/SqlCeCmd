@@ -120,18 +120,21 @@ namespace SqlCeCmd
                         else
                         {
                             rows = RunDataReader(cmd, conn, options.ColumnSeparator, options.RemoveSpaces);
-                            Console.WriteLine();
                             if (!options.HideOutput)
+                            {
+                                Console.WriteLine();
                                 Console.WriteLine(string.Format(CultureInfo.InvariantCulture, "({0} rows affected)", rows.ToString(cultureInfo)));
+                            }
                         }
                     }
                     if (execute == CommandExecute.NonQuery)
                     {
-
                         rows = RunNonQuery(cmd, conn);
-                        Console.WriteLine();
                         if (!options.HideOutput)
+                        {
+                            Console.WriteLine();
                             Console.WriteLine(string.Format(CultureInfo.InvariantCulture, "({0} rows affected)", rows.ToString(cultureInfo)));
+                        }
                     }
                     if (execute == CommandExecute.Insert)
                     {

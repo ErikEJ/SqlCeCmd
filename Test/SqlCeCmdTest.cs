@@ -58,6 +58,27 @@ namespace SqlCeCmd.Tests
             //options.QueryText = "SELECT * FROM [Employees]";
             //cmdHelper.RunCommand(options);            
         }
+        //-d"Data Source=C:\data\sqlce\test\nw40.sdf" -o -s -W -h 0 -n -q"SELECT * FROM Shippers"
+
+        [Test]
+        public void ExerciseCommand2()
+        {
+            SqlCeCommandHelper cmdHelper = new SqlCeCommandHelper(@"Data Source=C:\data\sqlce\test\northwind.sdf;");
+            Program.Options options = new Program.Options();
+            options.OutputFile = @"C:\data\sqlce\out.txt";
+            options.Headers = 0;
+            options.HideOutput = true;
+            options.RemoveSpaces = true;
+            options.QueryText = "SELECT * FROM Shippers;";
+            cmdHelper.RunCommand(options);
+            //options.QueryText = "SELECT * FROM [Orders]";
+            //cmdHelper.RunCommand(options);
+            //options.QueryText = "SELECT * FROM [Order Details]";
+            //cmdHelper.RunCommand(options);
+            //options.QueryText = "SELECT * FROM [Employees]";
+            //cmdHelper.RunCommand(options);            
+        }
+
 
         [Test]
         public void ExerciseCommandWithLoadImage()
