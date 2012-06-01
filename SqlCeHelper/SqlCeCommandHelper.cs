@@ -250,7 +250,8 @@ namespace SqlCeCmd
                             Console.Write("NULL".PadRight(headings[i].Width));
                         }
                     }
-                    Console.Write(colSep);
+                    if (i < rdr.FieldCount - 1)
+                        Console.Write(colSep);
                 }                
                 rows++;
                 Console.WriteLine();
