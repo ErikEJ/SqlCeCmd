@@ -76,7 +76,7 @@ namespace SqlCeCmd
                             Console.WriteLine("Database successfully repaired");
                             break;
                         case EngineAction.RepairRecover:
-                            engine.Repair(null, RepairOption.RecoverCorruptedRows);
+                            engine.Repair(null, RepairOption.RecoverAllOrFail);
                             Console.WriteLine("Database successfully repaired");
                             break;
                         case EngineAction.SetOption:
