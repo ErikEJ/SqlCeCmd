@@ -32,7 +32,7 @@ namespace SqlCeCmd
 
             //The 4 command options
             [Option("e", null,
-                    HelpText = "Run SQL Compact engine actions: \r\n        shrink|compact|create|upgrade|repairdelete|repairrecover")]
+                    HelpText = "Run SQL Compact engine actions: \r\n        shrink|compact|create|upgrade|verify|repairdelete|repairrecover")]
             public SqlCeEngineHelper.EngineAction EngineAction = SqlCeEngineHelper.EngineAction.Undefined;
 
             [Option("z", null,

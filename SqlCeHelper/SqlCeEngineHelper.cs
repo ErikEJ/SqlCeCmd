@@ -26,7 +26,8 @@ namespace SqlCeCmd
             RepairDelete,
             RepairRecover,
             GetInfo,
-            SetOption
+            SetOption,
+            Verify
         }
 
         internal void Execute(EngineAction action)
@@ -58,6 +59,10 @@ namespace SqlCeCmd
                         case EngineAction.Shrink:
                             engine.Shrink();
                             Console.WriteLine("Database successfully shrunk");
+                            break;
+                        case EngineAction.Verify:
+                            engine.Shrink();
+                            Console.WriteLine("Database successfully verified");
                             break;
                         case EngineAction.Compact:
                             engine.Compact(null);
