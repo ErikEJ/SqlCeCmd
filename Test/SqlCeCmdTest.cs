@@ -69,10 +69,10 @@ namespace SqlCeCmd.Tests
             options.Headers = 0;
             options.HideOutput = true;
             options.RemoveSpaces = true;
-            options.QueryText = "SELECT * FROM Shippers;";
-            cmdHelper.RunCommand(options);
-            //options.QueryText = "SELECT * FROM [Orders]";
+            //options.QueryText = "SELECT * FROM Shippers;";
             //cmdHelper.RunCommand(options);
+            options.QueryText = "SELECT * FROM [Orders]";
+            cmdHelper.RunCommand(options);
             //options.QueryText = "SELECT * FROM [Order Details]";
             //cmdHelper.RunCommand(options);
             //options.QueryText = "SELECT * FROM [Employees]";
