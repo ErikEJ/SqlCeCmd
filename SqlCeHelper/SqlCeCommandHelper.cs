@@ -221,6 +221,10 @@ namespace SqlCeCmd
                             }
                             value = sb.ToString();
                         }
+                        else if (fieldType == "DateTime")
+                        {
+                            value = ((DateTime)rdr[i]).ToString("O");
+                        }
                         else
                         {
                             value = Convert.ToString(rdr[i], cultureInfo);
