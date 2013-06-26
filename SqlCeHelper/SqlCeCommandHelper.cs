@@ -225,6 +225,14 @@ namespace SqlCeCmd
                         {
                             value = ((DateTime)rdr[i]).ToString("O");
                         }
+                        else if (fieldType == "Float")
+                        {
+                            value = rdr.GetDouble(i).ToString("R", System.Globalization.CultureInfo.InvariantCulture);
+                        }
+                        else if (fieldType == "Real")
+                        {
+                            value = rdr.GetFloat(i).ToString("R", System.Globalization.CultureInfo.InvariantCulture);
+                        }
                         else
                         {
                             value = Convert.ToString(rdr[i], cultureInfo);
