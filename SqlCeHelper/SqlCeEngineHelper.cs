@@ -61,9 +61,10 @@ namespace SqlCeCmd
                             Console.WriteLine("Database successfully shrunk");
                             break;
                         case EngineAction.Verify:
-                            engine.Shrink();
-                            Console.WriteLine("Database successfully verified");
-                            break;
+		                    Console.WriteLine(engine.Verify(VerifyOption.Enhanced)
+			                    ? "Database successfully verified"
+			                    : "Database verification failed");
+		                    break;
                         case EngineAction.Compact:
                             engine.Compact(null);
                             Console.WriteLine("Database successfully compacted");
