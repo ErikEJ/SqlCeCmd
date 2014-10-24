@@ -5,6 +5,7 @@ using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Globalization;
+using DbUp.Support.SqlServer;
 
 namespace SqlCeCmd
 {
@@ -39,30 +40,18 @@ namespace SqlCeCmd
 
         internal void RunCommands(SqlCeCmd.Program.Options options)
         {
-            using (System.IO.StreamReader sr = System.IO.File.OpenText(options.QueryFile))
-            {
-
-                StringBuilder sb = new StringBuilder(10000);
-                while (!sr.EndOfStream)
-                {
-                    string line = sr.ReadLine().Trim();
-                    if (line.Equals("GO", StringComparison.OrdinalIgnoreCase))
-                    {
-                        //Patch from vicok:
-                        if (!options.HideOutput)
-                            Console.WriteLine("Executing: " + sb.ToString());
-                        options.QueryText = sb.ToString();
-                        RunCommand(options);
-                       
-                        sb.Remove(0, sb.Length);
-                    }
-                    else
-                    {
-                        sb.Append(line);
-                        sb.Append(Environment.NewLine);
-                    }
-                }
-            }
+			using (var sr = new SqlCommandReader(options.QueryFile))
+			{
+				var commandText = sr.ReadCommand();
+				while (!string.IsNullOrWhiteSpace(commandText))
+				{
+					if (!options.HideOutput)
+						Console.WriteLine("Executing: " + commandText);
+					options.QueryText = commandText;
+					RunCommand(options);
+					commandText = sr.ReadCommand();
+				}
+			}
         }
 
         internal void RunCommand(SqlCeCmd.Program.Options options)

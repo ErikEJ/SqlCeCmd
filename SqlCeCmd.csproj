@@ -104,11 +104,13 @@
     <Compile Include="SqlCeHelper\SqlCeCommandHelper.cs" />
     <Compile Include="SqlCeHelper\SqlCeEngineHelper.cs" />
     <Compile Include="SqlCeHelper\SqlCeUtility.cs" />
+    <Compile Include="SqlCeHelper\SqlCommandReader.cs" />
     <Compile Include="Test\SqlCeCmdTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="data_information.ico" />
     <Content Include="lib\nunit.framework.dll" />
+    <Content Include="Test\goscript.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

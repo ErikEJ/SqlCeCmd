@@ -119,6 +119,30 @@ namespace SqlCeCmd.Tests
             Assert.AreEqual(count, 2820);
         }
 
+		[Test]
+		public void CodePlex13272()
+		{
+			string file = @"C:\data\test.sdf";
+			if (System.IO.File.Exists(file))
+			{
+				System.IO.File.Delete(file);
+			}
+			SqlCeEngineHelper testEngine = new SqlCeEngineHelper(string.Format("Data Source={0};", file));
+			testEngine.Execute(SqlCeEngineHelper.EngineAction.Create);
+			Assert.IsTrue(System.IO.File.Exists(file), "Create OK");
+
+			SqlCeCommandHelper cmdHelper = new SqlCeCommandHelper(string.Format("Data Source={0};", file));
+			Program.Options options = new Program.Options();
+			options.QueryFile = @"C:\Data\SQLCE\sqlcecmdSVN\Test\goscript.sql";
+
+			cmdHelper.RunCommands(options);
+
+			SqlCeCommand cmd = new SqlCeCommand("SELECT COUNT(*) FROM [example]", new SqlCeConnection(string.Format("Data Source={0};", file)));
+			cmd.Connection.Open();
+			int count = (int)cmd.ExecuteScalar();
+			Assert.AreEqual(count, 1);
+		}
+
         [Test]
         public void ExerciseParser()
         {
