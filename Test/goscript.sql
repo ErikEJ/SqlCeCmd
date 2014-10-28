@@ -10,3 +10,4 @@ INSERT INTO [example] ([pdfTikaContents]) VALUES (N'PDF contents extracted by Ap
   direction    
   ...');
 GO
+-- Last comment
