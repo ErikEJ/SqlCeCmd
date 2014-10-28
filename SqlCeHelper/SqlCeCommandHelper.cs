@@ -370,27 +370,87 @@ namespace SqlCeCmd
             return cmd.ExecuteNonQuery();
         }
 
-        private static CommandExecute FindExecuteType(string commandText)
+		//private static CommandExecute FindExecuteType(string commandText)
+		//{
+		//	if (string.IsNullOrEmpty(commandText))
+		//	{
+		//		return CommandExecute.Undefined;
+		//	}
+            
+		//	string test = commandText.Trim();
+
+		//	if (test.ToUpperInvariant().StartsWith("SELECT ", StringComparison.OrdinalIgnoreCase))
+		//	{
+		//		return CommandExecute.DataReader;
+		//	}
+		//	if (test.ToUpperInvariant().StartsWith("INSERT ", StringComparison.OrdinalIgnoreCase))
+		//	{
+		//		return CommandExecute.Insert;
+		//	}
+		//	else
+		//	{
+		//		return CommandExecute.NonQuery;
+		//	}
+		//}
+
+		private static CommandExecute FindExecuteType(string commandText)
         {
-            if (string.IsNullOrEmpty(commandText))
+            if (string.IsNullOrEmpty(commandText.Trim()))
             {
                 return CommandExecute.Undefined;
             }
-            
             string test = commandText.Trim();
 
-            if (test.ToUpperInvariant().StartsWith("SELECT ", StringComparison.OrdinalIgnoreCase))
+            while (test.StartsWith(Environment.NewLine))
+            {
+                test = test.Remove(0, 2);
+            }
+            //Remove initial comment lines if applicable
+            while (test.StartsWith("--"))
+            {
+                int pos = test.IndexOf("\r\n", 0);
+                if (pos > 0)
+                {
+                    test = test.Substring(pos + 2);
+                    while (test.StartsWith(Environment.NewLine))
+                    {
+                        test = test.Remove(0, 2);
+                    }
+                }
+                else
+                {
+                    break;
+                }
+            }
+            while (test.StartsWith(Environment.NewLine))
+            {
+                test = test.Remove(0, 2);
+            }
+            if (string.IsNullOrWhiteSpace(test))
+            {
+                return CommandExecute.Undefined;
+            }
+            if (test.StartsWith("--"))
+            {
+                return CommandExecute.Undefined;
+            }
+            if (test.ToUpperInvariant().StartsWith("SELECT", StringComparison.Ordinal) && test.Length > 6 && char.IsWhiteSpace(test[6]))
             {
                 return CommandExecute.DataReader;
             }
-            if (test.ToUpperInvariant().StartsWith("INSERT ", StringComparison.OrdinalIgnoreCase))
+			if (test.ToUpperInvariant().StartsWith("INSERT", StringComparison.Ordinal) && test.Length > 6 && char.IsWhiteSpace(test[6]))
+			{
+				return CommandExecute.Insert;
+			}
+            if (test.ToUpperInvariant().StartsWith("SP_", StringComparison.Ordinal))
             {
-                return CommandExecute.Insert;
+                return CommandExecute.DataReader;
             }
-            else
+            if (test.ToUpperInvariant().StartsWith("CREATE ") || test.ToUpperInvariant().StartsWith("ALTER ") || test.ToUpperInvariant().StartsWith("DROP "))
             {
                 return CommandExecute.NonQuery;
             }
+            return CommandExecute.NonQuery;
         }
 
         private static int GetFieldSize(SqlCeConnection conn, string fieldName, int maxWidth, string commandText)
