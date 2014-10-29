@@ -130,10 +130,6 @@ namespace SqlCeCmd
                         rows = RunNonQuery(cmd, conn);
                     }
                 }
-				//else
-				//{
-				//	Console.Error.WriteLine("Invalid command text");
-				//}
             }
         }
 
