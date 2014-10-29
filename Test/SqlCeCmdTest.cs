@@ -122,7 +122,7 @@ namespace SqlCeCmd.Tests
 		[Test]
 		public void CodePlex13272()
 		{
-			string file = @"C:\data\test.sdf";
+			string file = @"C:\tmp\test.sdf";
 			if (System.IO.File.Exists(file))
 			{
 				System.IO.File.Delete(file);
@@ -133,7 +133,7 @@ namespace SqlCeCmd.Tests
 
 			SqlCeCommandHelper cmdHelper = new SqlCeCommandHelper(string.Format("Data Source={0};", file));
 			Program.Options options = new Program.Options();
-			options.QueryFile = @"C:\Data\SQLCE\sqlcecmdSVN\Test\goscript.sql";
+			options.QueryFile = @"C:\tmp\CodePlex\sqlcecmd\Test\goscript.sql";
 
 			cmdHelper.RunCommands(options);
 
