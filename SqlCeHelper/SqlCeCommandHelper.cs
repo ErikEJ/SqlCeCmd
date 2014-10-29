@@ -130,10 +130,10 @@ namespace SqlCeCmd
                         rows = RunNonQuery(cmd, conn);
                     }
                 }
-                else
-                {
-                    Console.Error.WriteLine("Invalid command text");
-                }
+				//else
+				//{
+				//	Console.Error.WriteLine("Invalid command text");
+				//}
             }
         }
 
@@ -369,29 +369,6 @@ namespace SqlCeCmd
             cmd.Connection = connection;
             return cmd.ExecuteNonQuery();
         }
-
-		//private static CommandExecute FindExecuteType(string commandText)
-		//{
-		//	if (string.IsNullOrEmpty(commandText))
-		//	{
-		//		return CommandExecute.Undefined;
-		//	}
-            
-		//	string test = commandText.Trim();
-
-		//	if (test.ToUpperInvariant().StartsWith("SELECT ", StringComparison.OrdinalIgnoreCase))
-		//	{
-		//		return CommandExecute.DataReader;
-		//	}
-		//	if (test.ToUpperInvariant().StartsWith("INSERT ", StringComparison.OrdinalIgnoreCase))
-		//	{
-		//		return CommandExecute.Insert;
-		//	}
-		//	else
-		//	{
-		//		return CommandExecute.NonQuery;
-		//	}
-		//}
 
 		private static CommandExecute FindExecuteType(string commandText)
         {
