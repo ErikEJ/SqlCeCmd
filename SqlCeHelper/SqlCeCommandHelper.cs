@@ -270,7 +270,7 @@ namespace SqlCeCmd
                         break;
 
                     case "Binary":
-                        width = Math.Max(GetFieldSize(conn, rdr.GetName(i), maxWidth, cmd.CommandText), rdr.GetName(i).Length) + 2;
+                        width = (Math.Max(GetFieldSize(conn, rdr.GetName(i), maxWidth, cmd.CommandText), rdr.GetName(i).Length) * 2) + 2;
                         headings.Add(new Column { Name = rdr.GetName(i), Width = width, PadLeft = false });
                         break;
 
