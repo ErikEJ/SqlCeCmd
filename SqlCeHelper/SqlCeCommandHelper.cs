@@ -138,6 +138,7 @@ namespace SqlCeCmd
             cmd.Connection = conn;
             System.Data.DataTable table = new System.Data.DataTable();
             table.Locale = CultureInfo.InvariantCulture;
+            table.TableName = "data";
             table.Load(cmd.ExecuteReader());
             table.WriteXml(Console.Out, System.Data.XmlWriteMode.WriteSchema);
             return table.Rows.Count;
