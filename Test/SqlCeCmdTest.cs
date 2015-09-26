@@ -79,6 +79,20 @@ namespace SqlCeCmd.Tests
             //cmdHelper.RunCommand(options);            
         }
 
+        [Test]
+        public void ExerciseCommandXml()
+        {
+            SqlCeCommandHelper cmdHelper = new SqlCeCommandHelper(@"Data Source=C:\Users\Erik\SkyDrive\Dokumenter\Code\SQLCE\Test\nw40.sdf;");
+            Program.Options options = new Program.Options();
+            options.OutputFile = @"C:\data\out.txt";
+            options.Headers = 0;
+            options.HideOutput = true;
+            options.RemoveSpaces = true;
+            options.MakeXML = true;
+            options.QueryText = @"SELECT * FROM [Orders] o
+                INNER JOIN [Order Details] od ON od.[Order Id] = o.[Order Id]";
+            cmdHelper.RunCommand(options);
+        }
 
         [Test]
         public void ExerciseCommandWithLoadImage()
