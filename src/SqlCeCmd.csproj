@@ -1,0 +1,142 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{FFDB3855-7E0B-4888-8966-85A368C29060}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SqlCeCmd</RootNamespace>
+    <AssemblyName>SqlCeCmd</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ApplicationIcon>data_information.ico</ApplicationIcon>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugTest|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\DebugTest\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;UNIT_TESTS</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="nunit.framework, Version=2.4.1.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL" />
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.SqlServerCe, Version=3.5.1.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="CommandLineParser\Attributes\BaseOptionAttribute.cs" />
+    <Compile Include="CommandLineParser\Attributes\HelpOptionAttribute.cs" />
+    <Compile Include="CommandLineParser\Attributes\OptionAttribute.cs" />
+    <Compile Include="CommandLineParser\Attributes\OptionListAttribute.cs" />
+    <Compile Include="CommandLineParser\Attributes\ValueListAttribute.cs" />
+    <Compile Include="CommandLineParser\CommandLineParser.cs" />
+    <Compile Include="CommandLineParser\Core\ArgumentParser.cs" />
+    <Compile Include="CommandLineParser\Core\CharEnumeratorEx.cs" />
+    <Compile Include="CommandLineParser\Core\IOptionMap.cs" />
+    <Compile Include="CommandLineParser\Core\IStringEnumerator.cs" />
+    <Compile Include="CommandLineParser\Core\LongOptionParser.cs" />
+    <Compile Include="CommandLineParser\Core\OptionGroupParser.cs" />
+    <Compile Include="CommandLineParser\Core\OptionInfo.cs" />
+    <Compile Include="CommandLineParser\Core\OptionMap.cs" />
+    <Compile Include="CommandLineParser\Core\PairT.cs" />
+    <Compile Include="CommandLineParser\Core\ParserState.cs" />
+    <Compile Include="CommandLineParser\Core\StringEnumeratorEx.cs" />
+    <Compile Include="CommandLineParser\Exceptions\IncompatibleTypesException.cs" />
+    <Compile Include="CommandLineParser\Exceptions\ParserException.cs" />
+    <Compile Include="CommandLineParser\ICommandLineParser.cs" />
+    <Compile Include="CommandLineParser\Parser.cs" />
+    <Compile Include="CommandLineParser\Text\CopyrightInfo.cs" />
+    <Compile Include="CommandLineParser\Text\HeadingInfo.cs" />
+    <Compile Include="CommandLineParser\Text\HelpText.cs" />
+    <Compile Include="CommandLineParser\Util\ReflectionUtil.cs" />
+    <Compile Include="CommandLineParser\Util\Validator.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SqlCeHelper\Column.cs" />
+    <Compile Include="SqlCeHelper\SqlCeCommandHelper.cs" />
+    <Compile Include="SqlCeHelper\SqlCeEngineHelper.cs" />
+    <Compile Include="SqlCeHelper\SqlCeUtility.cs" />
+    <Compile Include="SqlCeHelper\SqlCommandReader.cs" />
+    <Compile Include="Test\SqlCeCmdTest.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="data_information.ico" />
+    <Content Include="lib\nunit.framework.dll" />
+    <Content Include="Test\goscript.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqlCeCmd40", "SqlCeCmd40.csproj", "{811AF4A1-B297-4035-8489-80FDC7E59DBB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqlCeCmd", "SqlCeCmd.csproj", "{FFDB3855-7E0B-4888-8966-85A368C29060}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		DebugTest|Any CPU = DebugTest|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{811AF4A1-B297-4035-8489-80FDC7E59DBB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{811AF4A1-B297-4035-8489-80FDC7E59DBB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{811AF4A1-B297-4035-8489-80FDC7E59DBB}.DebugTest|Any CPU.ActiveCfg = DebugTest|Any CPU
+		{811AF4A1-B297-4035-8489-80FDC7E59DBB}.DebugTest|Any CPU.Build.0 = DebugTest|Any CPU
+		{811AF4A1-B297-4035-8489-80FDC7E59DBB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{811AF4A1-B297-4035-8489-80FDC7E59DBB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FFDB3855-7E0B-4888-8966-85A368C29060}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FFDB3855-7E0B-4888-8966-85A368C29060}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FFDB3855-7E0B-4888-8966-85A368C29060}.DebugTest|Any CPU.ActiveCfg = DebugTest|Any CPU
+		{FFDB3855-7E0B-4888-8966-85A368C29060}.DebugTest|Any CPU.Build.0 = DebugTest|Any CPU
+		{FFDB3855-7E0B-4888-8966-85A368C29060}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FFDB3855-7E0B-4888-8966-85A368C29060}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
