@@ -1,4 +1,4 @@
-## SqlCeCmd
+# SqlCeCmd
 
 # What is it?
 
