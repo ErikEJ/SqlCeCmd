@@ -1,5 +1,3 @@
-# SqlCeCmd
-
 # What is it?
 
 Administer SQL Compact databases directly from the command line, without having Visual Studio or SQL Server Management Studio installed. Only requires NetFx 2.0 and SQL Compact installed. Command line options similar to sqlcmd (for SQL Server). Also runs any SQL Compact script files. 
